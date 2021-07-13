@@ -5,7 +5,9 @@
  * https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/concept.drm.txt
  * https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/flow/flow.play.cpp
  *
- *
+ * cp squashfs-root/usr/lib/ezx/lib/libdrmfwudaclient.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
+ * rm squashfs-root/usr/lib/libxml2.so.2.6
+ * cp squashfs-root/usr/lib/libxml2.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
  */
 
 // Qt
@@ -15,10 +17,12 @@
 #include <qglobal.h>
 
 // DRM
-extern QString *DRM_IsDRMFile(QString *aFile);
-extern int DRM_StartRightsMeter(int *session, QString *aFile, int arg1, int arg2);
-extern QString *DRM_CreateConsumptionFilePath(int session, int arg1, QString *aFile)
-extern int DRM_StopRightsMeter(int session);
+extern "C" {
+	extern QString *DRM_IsDRMFile(QString *aFile);
+	extern int DRM_StartRightsMeter(int *session, QString *aFile, int arg1, int arg2);
+	extern QString DRM_CreateConsumptionFilePath(int session, int arg1, QString *aFile);
+	extern int DRM_StopRightsMeter(int session);
+}
 
 void usage(void) {
 	qDebug(
@@ -49,23 +53,25 @@ void copy_file(QFile &fileFrom, QFile &fileTo) {
 	}
 }
 
-void copy(const QString &pathIn, const QString pathOut) {
+int copy(const QString &pathIn, const QString pathOut) {
 	QFile fileIn(pathIn);
 	QFile fileOut(pathOut);
 	if (!fileIn.open(IO_ReadOnly)) {
 		qDebug(QString("Error: Cannot open file '%1' to read!").arg(pathIn));
-		return 2;
+		return 0;
 	}
 	if (!fileOut.open(IO_WriteOnly)) {
 		qDebug(QString("Error: Cannot open file '%1' to write!").arg(pathOut));
 		fileIn.close();
-		return 3;
+		return 0;
 	}
 
 	copy_file(fileIn, fileOut);
 
 	fileIn.close();
 	fileOut.close();
+
+	return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -79,24 +85,27 @@ int main(int argc, char *argv[]) {
 	QString pathIn(argv[1]);
 	QString pathOut(argv[2]);
 
-	if (DRM_IsDRMFile(pathIn)) {
+	if (DRM_IsDRMFile(&pathIn)) {
 		int drm_session = 0;
 		if (DRM_StartRightsMeter(&drm_session, &pathIn, 0, 1) == 0x7D2) {
 			QString pathVirtual = DRM_CreateConsumptionFilePath(drm_session, 0, &pathIn);
 			if (pathVirtual) {
-				qDebug(QString("Info: Virtual path for consumption is: '%1").arg(pathVirtual));
-				copy(pathVirtual, pathOut);
+				qDebug(QString("Info: Virtual path for consumption is: '%1'").arg(pathVirtual));
+				if (copy(pathVirtual, pathOut)) {
+					qDebug(QString("Info: File '%1' created.").arg(pathOut));
+				}
 			} else {
 				qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
-				return 2;
+				return 4;
 			}
+			DRM_StopRightsMeter(drm_session);
 		} else {
 			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
-			return 3;
+			return 5;
 		}
 	} else {
 		qDebug(QString("Error: '%1' is not DRM file!").arg(pathIn));
-		return 4;
+		return 6;
 	}
 
 	return 0;
