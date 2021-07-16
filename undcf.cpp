@@ -34,7 +34,8 @@ void usage(void) {
 		"Usage:\n"
 		"\tundcf <in-file-path> <out-file-path>\n"
 		"Example:\n"
-		"\tundcf picture.dcf picture.png\n"
+		"\tundcf image.gif.dcf image.gif\n"
+		"\tundcf image.drm.gif image.gif\n"
 	);
 }
 
