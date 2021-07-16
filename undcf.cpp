@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 	QString pathIn(argv[1]);
 	QString pathOut(argv[2]);
 
-	if (DRM_IsDRMFile(&pathIn)) {
+//	if (DRM_IsDRMFile(&pathIn)) {
 		int drm_session = 0;
 		if (DRM_StartRightsMeter(&drm_session, &pathIn, 0, 1) == 0x7D2) {
 			QString pathVirtual = DRM_CreateConsumptionFilePath(drm_session, 0, &pathIn);
@@ -103,10 +103,10 @@ int main(int argc, char *argv[]) {
 			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
 			return 5;
 		}
-	} else {
-		qDebug(QString("Error: '%1' is not DRM file!").arg(pathIn));
-		return 6;
-	}
+//	} else {
+//		qDebug(QString("Error: '%1' is not DRM file!").arg(pathIn));
+//		return 6;
+//	}
 
 	return 0;
 }
