@@ -28,7 +28,7 @@ extern "C" {
 	extern char *DRM_CreateConsumptionFilePath(int session, int arg1, char *aFile);
 	extern int DRM_StopRightsMeter(int session);
 
-	#define	DRM_START_RIGHTS_METER_OK 0x7D2 // 2002
+	#define	DRM_ACTION_ALLOWED 0x7D2 // 2002
 }
 
 static int usage(void) {
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 		int lDrmSession = 0;
 		const int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], 0, 1);
 		qDebug(QString("Info: DRM_StartRightsMeter return is '0x%1'.").arg(QString().setNum(lResult, 16)));
-		if (lResult == DRM_START_RIGHTS_METER_OK) {
+		if (lResult == DRM_ACTION_ALLOWED) {
 			const char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, 0, argv[1]);
 			if (lConsumptionPath) {
 				qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
