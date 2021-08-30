@@ -28,7 +28,7 @@ extern "C" {
 	extern char *DRM_CreateConsumptionFilePath(int session, int arg1, char *aFile);
 	extern int DRM_StopRightsMeter(int session);
 
-	#define	DRM_START_RIGHTS_METER_OK 0x7D2
+	#define	DRM_START_RIGHTS_METER_OK 0x7D2 // 2002
 }
 
 static int usage(void) {
