@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 //	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
 		int lDrmSession = 0;
 		const int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], 0, 1);
-		qDebug(QString("Info: DRM_StartRightsMeter return is '%1'.").arg(lResult));
+		qDebug(QString("Info: DRM_StartRightsMeter return is '0x%1'.").arg(QString().setNum(lResult, 16)));
 		if (lResult == DRM_START_RIGHTS_METER_OK) {
 			const char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, 0, argv[1]);
 			if (lConsumptionPath) {
