@@ -18,9 +18,9 @@
 
 // DRM
 extern "C" {
-	extern QString *DRM_IsDRMFile(QString *aFile);
-	extern int DRM_StartRightsMeter(int *session, QString *aFile, int arg1, int arg2);
-	extern QString DRM_CreateConsumptionFilePath(int session, int arg1, QString *aFile);
+	extern char *DRM_IsDRMFile(char *aFile);
+	extern int DRM_StartRightsMeter(int *session, char *aFile, int arg1, int arg2);
+	extern char *DRM_CreateConsumptionFilePath(int session, int arg1, char *aFile);
 	extern int DRM_StopRightsMeter(int session);
 }
 
@@ -76,38 +76,40 @@ int copy(const QString &pathIn, const QString pathOut) {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc < 2) {
+	if (argc < 3) {
 		usage();
 		return 1;
 	}
 
 	QApplication app(argc, argv); // TODO: Is it necessary?
 
-	QString pathIn(argv[1]);
-	QString pathOut(argv[2]);
+//	QString pathIn(argv[1]);
+//	QString pathOut(argv[2]);
 
-	if (DRM_IsDRMFile(&pathIn)) {
+//	if (DRM_IsDRMFile(&pathIn)) {
 		int drm_session = 0;
-		if (DRM_StartRightsMeter(&drm_session, &pathIn, 0, 1) == 0x7D2) {
-			QString pathVirtual = DRM_CreateConsumptionFilePath(drm_session, 0, &pathIn);
-			if (pathVirtual) {
-				qDebug(QString("Info: Virtual path for consumption is: '%1'").arg(pathVirtual));
-				if (copy(pathVirtual, pathOut)) {
-					qDebug(QString("Info: File '%1' created.").arg(pathOut));
+		int res = DRM_StartRightsMeter(&drm_session, argv[1], 0, 1);
+		qDebug(QString("Info: DRM_StartRightsMeter ret is '%1'.").arg(res));
+//		if (DRM_StartRightsMeter(&drm_session, &pathIn, 0, 1) == 0x7D2) {
+			char *consumptionFilePath = DRM_CreateConsumptionFilePath(drm_session, 0, argv[1]);
+			if (consumptionFilePath) {
+				qDebug(QString("Info: Virtual path for consumption is: '%1'").arg(QString(consumptionFilePath)));
+				if (copy(consumptionFilePath, argv[2])) {
+					qDebug(QString("Info: File '%1' created.").arg(argv[2]));
 				}
 			} else {
 				qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
 				return 4;
 			}
 			DRM_StopRightsMeter(drm_session);
-		} else {
-			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
-			return 5;
-		}
-	} else {
-		qDebug(QString("Error: '%1' is not DRM file!").arg(pathIn));
-		return 6;
-	}
+//		} else {
+//			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
+//			return 5;
+//		}
+//	} else {
+//		qDebug(QString("Error: '%1' is not DRM file!").arg(pathIn));
+//		return 6;
+//	}
 
 	return 0;
 }
