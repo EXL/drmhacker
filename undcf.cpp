@@ -1,17 +1,22 @@
 /*
+ * History:
+ * 30-Aug-2021: Clean version.
+ * 14-Jun-2021: Draft version.
+ *
  * Flow:
  * DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
  *
+ * Some Information:
  * https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/concept.drm.txt
  * https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/flow/flow.play.cpp
  *
+ * Patch for MotoMAGX Toolchain & SDK:
  * cp squashfs-root/usr/lib/ezx/lib/libdrmfwudaclient.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
  * rm squashfs-root/usr/lib/libxml2.so.2.6
  * cp squashfs-root/usr/lib/libxml2.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
  */
 
 // Qt
-#include <qapplication.h>
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qglobal.h>
@@ -22,13 +27,14 @@ extern "C" {
 	extern int DRM_StartRightsMeter(int *session, char *aFile, int arg1, int arg2);
 	extern char *DRM_CreateConsumptionFilePath(int session, int arg1, char *aFile);
 	extern int DRM_StopRightsMeter(int session);
+
+	#define	DRM_START_RIGHTS_METER_OK 0x7D2
 }
 
-void usage(void) {
+static int usage(void) {
 	qDebug(
-		"|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 14-Jun-2021\n\n"
 		"Information:\n"
-		"\thttps://forum.motofan.ru/index.php?showtopic=1262\n"
+		"\thttps://forum.motofan.ru/index.php?showtopic=1262\n" // TODO: Fix this link to actual!
 		"Source code:\n"
 		"\thttps://github.com/EXL/undcf\n"
 		"Usage:\n"
@@ -37,78 +43,69 @@ void usage(void) {
 		"\tundcf image.gif.dcf image.gif\n"
 		"\tundcf image.drm.gif image.gif\n"
 	);
+	return 1;
 }
 
-void copy_file(QFile &fileFrom, QFile &fileTo) {
-	QDataStream streamOut(&fileTo);
-	const int buffer_size = 4096;
-	int block_size_accumulator = 0;
-	char buffer[buffer_size];
-	while (!fileFrom.atEnd()) {
-		const int block_size = fileFrom.readBlock(buffer, buffer_size);
-		block_size_accumulator += block_size;
-		if (block_size < 0)
+static void CopyFileAux(QFile &aFileFrom, QFile &aFileTo) {
+	const int lBufferSize = 4096;
+	char lBuffer[lBufferSize] = { '\0' };
+	int lBlockSizeAccumulator = 0;
+	QDataStream lDataStreamOut(&aFileTo);
+	while (!aFileFrom.atEnd()) {
+		const int lBlockSize = aFileFrom.readBlock(lBuffer, lBufferSize);
+		lBlockSizeAccumulator += lBlockSize;
+		if (lBlockSize < 0)
 			break;
-		streamOut.writeRawBytes(buffer, block_size);
-		qDebug(QString("Written size: %1, buffer size: %2").arg(block_size_accumulator).arg(block_size));
+		lDataStreamOut.writeRawBytes(lBuffer, lBlockSize);
+		qDebug(QString("=> Written size: %1, buffer size: %2").arg(lBlockSizeAccumulator).arg(lBlockSize));
 	}
 }
 
-int copy(const QString &pathIn, const QString pathOut) {
-	QFile fileIn(pathIn);
-	QFile fileOut(pathOut);
-	if (!fileIn.open(IO_ReadOnly)) {
-		qDebug(QString("Error: Cannot open file '%1' to read!").arg(pathIn));
+static int CopyFile(const QString &aPathIn, const QString& aPathOut) {
+	QFile lFileInput(aPathIn);
+	QFile lFileOutput(aPathOut);
+	if (!lFileInput.open(IO_ReadOnly)) {
+		qDebug(QString("Error: Cannot open input file '%1' to read!").arg(aPathIn));
 		return 0;
 	}
-	if (!fileOut.open(IO_WriteOnly)) {
-		qDebug(QString("Error: Cannot open file '%1' to write!").arg(pathOut));
-		fileIn.close();
+	if (!lFileOutput.open(IO_WriteOnly)) {
+		qDebug(QString("Error: Cannot open file '%1' to write!").arg(aPathOut));
+		lFileInput.close();
 		return 0;
 	}
-
-	copy_file(fileIn, fileOut);
-
-	fileIn.close();
-	fileOut.close();
-
+	CopyFileAux(lFileInput, lFileOutput);
+	lFileInput.close();
+	lFileOutput.close();
 	return 1;
 }
 
 int main(int argc, char *argv[]) {
-	if (argc < 3) {
-		usage();
-		return 1;
-	}
+	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 30-Aug-2021\n\n");
+	if (argc < 3)
+		return usage();
 
-	QApplication app(argc, argv); // TODO: Is it necessary?
-
-//	QString pathIn(argv[1]);
-//	QString pathOut(argv[2]);
-
-//	if (DRM_IsDRMFile(&pathIn)) {
-		int drm_session = 0;
-		int res = DRM_StartRightsMeter(&drm_session, argv[1], 0, 1);
-		qDebug(QString("Info: DRM_StartRightsMeter ret is '%1'.").arg(res));
-//		if (DRM_StartRightsMeter(&drm_session, &pathIn, 0, 1) == 0x7D2) {
-			char *consumptionFilePath = DRM_CreateConsumptionFilePath(drm_session, 0, argv[1]);
-			if (consumptionFilePath) {
-				qDebug(QString("Info: Virtual path for consumption is: '%1'").arg(QString(consumptionFilePath)));
-				if (copy(consumptionFilePath, argv[2])) {
-					qDebug(QString("Info: File '%1' created.").arg(argv[2]));
-				}
+//	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
+		int lDrmSession = 0;
+		const int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], 0, 1);
+		qDebug(QString("Info: DRM_StartRightsMeter return is '%1'.").arg(lResult));
+		if (lResult == DRM_START_RIGHTS_METER_OK) {
+			const char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, 0, argv[1]);
+			if (lConsumptionPath) {
+				qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
+				if (CopyFile(lConsumptionPath, argv[2]))
+					qDebug(QString("Info: Uncrypted file '%1' was created.").arg(argv[2]));
 			} else {
 				qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
-				return 4;
+				return 1;
 			}
-			DRM_StopRightsMeter(drm_session);
-//		} else {
-//			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
-//			return 5;
-//		}
+			DRM_StopRightsMeter(lDrmSession);
+		} else {
+			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
+			return 1;
+		}
 //	} else {
-//		qDebug(QString("Error: '%1' is not DRM file!").arg(pathIn));
-//		return 6;
+//		qDebug(QString("Error: File '%1' is not a DRM file!").arg(argv[1]));
+//		return 1;
 //	}
 
 	return 0;
