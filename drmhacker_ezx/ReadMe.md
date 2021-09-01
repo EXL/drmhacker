@@ -18,3 +18,9 @@ make -f Makefile.ezx
 
 TODO: how to install toolchain/SDK, link
 
+```
+progen CONFIG+=thread LIBS="-lezxjaid-xscale-r" -o drmhacker_e680.pro
+tmake drmhacker_e680.pro -o Makefile.e680
+make -f Makefile.e680 clean
+make -f Makefile.e680
+```
