@@ -35,9 +35,8 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS)
 	$(CXX) $(LDLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
 	$(STRIP) -s $(TARGET)
-	mv $(TARGET) $(APPNAME)
 
-tar:
+tar: $(TARGET)
 	-tar -cvf $(TARGET).tar $(TARGET)
 
 rmobj:
@@ -46,4 +45,4 @@ rmobj:
 	$(RM) *.o
 
 clean: rmobj
-	$(RM) $(APPNAME) $(TARGET) $(APPNAME)_* *.tar
+	$(RM) $(TARGET) *.tar
