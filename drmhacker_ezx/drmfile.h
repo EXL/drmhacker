@@ -1,4 +1,4 @@
-// drmfile.h 
+// drmfile.h
 // EZX DRM file reading
 // corresponds to libezxaid.so
 // compile with -lezxaid -lezxtapi
@@ -7,22 +7,21 @@
 #define _DRMFILE_H_
 #include <qfile.h>
 
-class Q_EXPORT J2ME_JAID_DRMFile: public QFile
-{
-  public:
-    J2ME_JAID_DRMFile();
-    J2ME_JAID_DRMFile(QString const&);
-    virtual ~J2ME_JAID_DRMFile();
-    
-    virtual bool open ( int ); 
-    virtual void close (); 
-    virtual void flush (); 
-    virtual uint size () const;
-    virtual bool at ( int ); 
-    virtual int readBlock ( char * data, uint len ); 
-    virtual int readLine ( char * data, uint maxlen ); 
-    virtual int getch (); 
-    virtual int ungetch ( int );
+class Q_EXPORT J2ME_JAID_DRMFile: public QFile {
+public:
+	J2ME_JAID_DRMFile();
+	J2ME_JAID_DRMFile(QString const&);
+	virtual ~J2ME_JAID_DRMFile();
+
+	virtual bool open(int);
+	virtual void close();
+	virtual void flush();
+	virtual uint size() const;
+	virtual bool at(int);
+	virtual int readBlock(char * data, uint len);
+	virtual int readLine(char * data, uint maxlen);
+	virtual int getch();
+	virtual int ungetch(int);
 };
 
 /*
@@ -41,4 +40,4 @@ J2ME_JAID_DRMFile::ungetch(int)
 J2ME_JAID_DRMFile::~J2ME_JAID_DRMFile()
 */
 
-#endif //drmfile.h
+#endif // _DRMFILE_H_
