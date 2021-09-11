@@ -1,14 +1,12 @@
 /*
  * History:
+ * 12-Sep-2021: Refactor code.
  * 30-Aug-2021: Clean version.
  * 14-Jun-2021: Draft version.
  *
  * Flow:
- * DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
- *
- * Some Information:
- * https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/concept.drm.txt
- * https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/flow/flow.play.cpp
+ * 1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
+ * 2. DRM_SP_Register() => fopen()
  *
  * Patch for MotoMAGX Toolchain & SDK:
  * cp squashfs-root/usr/lib/ezx/lib/libdrmfwudaclient.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
@@ -31,12 +29,12 @@ extern "C" {
 	#define	DRM_ACTION_ALLOWED 0x7D2 // 2002
 }
 
-static int usage(void) {
+static int Usage(void) {
 	qDebug(
 		"Information:\n"
 		"\thttps://forum.motofan.ru/index.php?showtopic=1262\n" // TODO: Fix this link to actual!
 		"Source code:\n"
-		"\thttps://github.com/EXL/undcf\n"
+		"\thttps://github.com/EXL/drmhacker\n"
 		"Usage:\n"
 		"\tundcf <in-file-path> <out-file-path>\n"
 		"Example:\n"
@@ -82,7 +80,7 @@ static int CopyFile(const QString &aPathIn, const QString& aPathOut) {
 int main(int argc, char *argv[]) {
 	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 30-Aug-2021\n\n");
 	if (argc < 3)
-		return usage();
+		return Usage();
 
 //	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
 		int lDrmSession = 0;

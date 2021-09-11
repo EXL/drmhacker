@@ -49,3 +49,11 @@ struct DRM_METADATA_T {
 Идея №3, выставить функцию `DRM_PreExtern()` перед всеми манипуляциями.
 
 Идея №4, изучить ap log, файлики и директории `/mnt/msc_int0/logger`, `/usr/bin/aplogd`, как именно читать эти логи?
+
+Пример использования похожих функций, которые удалось нагуглить:
+
+https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/concept.drm.txt
+
+https://github.com/rajdeokumarsingh/Notes/blob/master/computer.science/android/multimedia/drm/drm.pekall.2.2/flow/flow.play.cpp
+
+Но похоже это не имеет ничего общего с реальностью.
