@@ -21,12 +21,36 @@
 
 // DRM
 extern "C" {
-	extern char *DRM_IsDRMFile(char *aFile);
-	extern int DRM_StartRightsMeter(int *session, char *aFile, int arg1, int arg2);
-	extern char *DRM_CreateConsumptionFilePath(int session, int arg1, char *aFile);
-	extern int DRM_StopRightsMeter(int session);
+	#define	DRM_ACTION_ALLOWED  0x7D2 // 2002
+	#define DRM_REQUEST_PREVIEW 0x00
+	#define DRM_REQUEST_PLAY    0x01
 
-	#define	DRM_ACTION_ALLOWED 0x7D2 // 2002
+	extern char *DRM_IsDRMFile(char *aPathToFile);
+	extern int DRM_StartRightsMeter(
+		char *aSession,
+		char *aPathToFile,
+		char *aUnknownPtrOne,
+		int aAction,
+		char *aUnknownPtrTwo,
+		int aUnknownBool
+	);
+	/*
+	extern int DRM_StartRightsMeter(
+		char *aSession,
+		char *aPathToFile,
+		int *aUnknownPtrOne,
+		int aAction,
+		int *aUnknownPtrTwo,
+		int aUnknownBool
+	);
+	*/
+	extern char *DRM_CreateConsumptionFilePath(
+		char *aSession,
+		int aUnknownBool,
+		const char *aPathToFile,
+		int aUnknownInt
+	);
+	extern int DRM_StopRightsMeter(char *aSession);
 }
 
 static int Usage(void) {
@@ -36,10 +60,10 @@ static int Usage(void) {
 		"Source code:\n"
 		"\thttps://github.com/EXL/drmhacker\n"
 		"Usage:\n"
-		"\tundcf <in-file-path> <out-file-path>\n"
-		"Example:\n"
-		"\tundcf image.gif.dcf image.gif\n"
-		"\tundcf image.drm.gif image.gif\n"
+		"\tdrmhacker_magx <in-file-path> <out-file-path>\n"
+		"Examples:\n"
+		"\tdrmhacker_magx image.gif.dcf image.gif\n"
+		"\tdrmhacker_magx image.drm.gif image.gif\n"
 	);
 	return 1;
 }
@@ -83,11 +107,11 @@ int main(int argc, char *argv[]) {
 		return Usage();
 
 //	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
-		int lDrmSession = 0;
-		const int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], 0, 1);
+		char *lDrmSession = NULL;
+		const int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PLAY, NULL, false);
 		qDebug(QString("Info: DRM_StartRightsMeter return is '0x%1'.").arg(QString().setNum(lResult, 16)));
 		if (lResult == DRM_ACTION_ALLOWED) {
-			const char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, 0, argv[1]);
+			const char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
 			if (lConsumptionPath) {
 				qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
 				if (CopyFile(lConsumptionPath, argv[2]))
@@ -96,11 +120,14 @@ int main(int argc, char *argv[]) {
 				qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
 				return 1;
 			}
+			free(lConsumptionPath);
 			DRM_StopRightsMeter(lDrmSession);
 		} else {
 			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
 			return 1;
 		}
+		free(lDrmSession);
+		lDrmSession = NULL;
 //	} else {
 //		qDebug(QString("Error: File '%1' is not a DRM file!").arg(argv[1]));
 //		return 1;
