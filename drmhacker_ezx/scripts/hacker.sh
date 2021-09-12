@@ -16,4 +16,4 @@ JAVANAME=`basename $1`
 JAVANUM=`echo -n $1 | sed -e 's/.*MIDlet\([0-9]*\).*/\1/g'`
 NEWJAVANAME=`echo -n $JAVANAME | sed -e s/\.drm/$JAVANUM/g`
 echo -n "Hacking [$JAVANAME]->[$NEWJAVANAME]... "
-(./drmhacker $1 $DIR/java/$NEWJAVANAME > /dev/null && echo "ok") || echo "failed"
+(./drmhacker_ezx $1 $DIR/java/$NEWJAVANAME > /dev/null && echo "ok") || echo "failed"
