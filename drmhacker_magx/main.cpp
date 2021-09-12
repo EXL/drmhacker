@@ -14,6 +14,9 @@
  * cp squashfs-root/usr/lib/libxml2.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
  */
 
+// C
+#include <cstdlib>
+
 // Qt
 #include <qdatastream.h>
 #include <qfile.h>
@@ -22,12 +25,14 @@
 // DRM
 extern "C" {
 	#define	DRM_ACTION_ALLOWED  0x7D2 // 2002
-	#define DRM_REQUEST_PREVIEW 0x00
-	#define DRM_REQUEST_PLAY    0x01
+	#define DRM_REQUEST_PLAY    0x00
+	#define DRM_REQUEST_PREVIEW 0x01
+	#define DRM_SP_SUCCESS      0x00
+	#define DRM_SP_PLAY         0x01
 
 	extern char *DRM_IsDRMFile(char *aPathToFile);
 	extern int DRM_StartRightsMeter(
-		char *aSession,
+		char **aSession,
 		char *aPathToFile,
 		char *aUnknownPtrOne,
 		int aAction,
@@ -36,7 +41,7 @@ extern "C" {
 	);
 	/*
 	extern int DRM_StartRightsMeter(
-		char *aSession,
+		char **aSession,
 		char *aPathToFile,
 		int *aUnknownPtrOne,
 		int aAction,
@@ -51,6 +56,10 @@ extern "C" {
 		int aUnknownInt
 	);
 	extern int DRM_StopRightsMeter(char *aSession);
+
+	extern void DRM_SP_Register(const char *aFileName, int aReserved);
+	extern void DRM_SP_UnRegister(const char *aFileName);
+	extern int DRM_SP_ValidateRights(const char *aFileName, int aAction, int aUnknownBool);
 }
 
 static int Usage(void) {
@@ -108,10 +117,12 @@ int main(int argc, char *argv[]) {
 
 //	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
 		char *lDrmSession = NULL;
-		const int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PLAY, NULL, false);
-		qDebug(QString("Info: DRM_StartRightsMeter return is '0x%1'.").arg(QString().setNum(lResult, 16)));
+		int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PREVIEW, NULL, false);
+		qDebug(QString("Info: DRM_StartRightsMeter try #1 return is '0x%1'.").arg(QString().setNum(lResult, 16)));
+		if (lResult != DRM_ACTION_ALLOWED)
+			lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PLAY, NULL, false);
 		if (lResult == DRM_ACTION_ALLOWED) {
-			const char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
+			char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
 			if (lConsumptionPath) {
 				qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
 				if (CopyFile(lConsumptionPath, argv[2]))
@@ -123,7 +134,15 @@ int main(int argc, char *argv[]) {
 			free(lConsumptionPath);
 			DRM_StopRightsMeter(lDrmSession);
 		} else {
-			qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
+			qDebug("Warning: Looks like DRM_StartRightsMeter() function failed.");
+			qDebug("Warning: Trying another one method.");
+			DRM_SP_Register(argv[1], false);
+			QString lMediaFileName(argv[1]);
+			if (DRM_SP_ValidateRights(lMediaFileName, DRM_SP_PLAY, false) == DRM_SP_SUCCESS)
+				CopyFile(argv[1], argv[2]);
+			else
+				qDebug("Error: DRM_SP method not working.");
+			DRM_SP_UnRegister(argv[1]);
 			return 1;
 		}
 		free(lDrmSession);
