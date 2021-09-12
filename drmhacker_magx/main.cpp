@@ -24,11 +24,16 @@
 
 // DRM
 extern "C" {
-	#define	DRM_ACTION_ALLOWED  0x7D2 // 2002
-	#define DRM_REQUEST_PLAY    0x00
-	#define DRM_REQUEST_PREVIEW 0x01
-	#define DRM_SP_SUCCESS      0x00
-	#define DRM_SP_PLAY         0x01
+	#define	DRM_ACTION_ALLOWED    0x7D2 // 2002, success return code
+	#define	DRM_SOME_ERROR        0x7D0 // 2000, some error return code
+	#define DRM_REQUEST_PLAY      0x00  // Probably
+	#define DRM_REQUEST_PREVIEW   0x01  // Probably
+	#define DRM_REQUEST_EXECUTE   0x02  // Probably
+	#define DRM_REQUEST_PRINT     0x03  // Probably
+	#define DRM_REQUEST_UNKNOWN_1 0x04  // ??
+	#define DRM_REQUEST_UNKNOWN_2 0x05  // ??
+	#define DRM_SP_SUCCESS        0x00
+	#define DRM_SP_PLAY           0x01
 
 	extern char *DRM_IsDRMFile(char *aPathToFile);
 	extern int DRM_StartRightsMeter(
@@ -117,11 +122,13 @@ int main(int argc, char *argv[]) {
 
 //	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
 		char *lDrmSession = NULL;
-		int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PREVIEW, NULL, false);
-		qDebug(QString("Info: DRM_StartRightsMeter try #1 return is '0x%1'.").arg(QString().setNum(lResult, 16)));
-		if (lResult != DRM_ACTION_ALLOWED) {
-			lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PLAY, NULL, false);
-			qDebug(QString("Info: DRM_StartRightsMeter try #2 return is '0x%1'.").arg(QString().setNum(lResult, 16)));
+		int lResult = 0;
+		for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_UNKNOWN_2; ++i) {
+			lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, i, NULL, false);
+			qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
+				.arg(QString().setNum(i)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
+			if (lResult == DRM_ACTION_ALLOWED)
+				break;
 		}
 		if (lResult == DRM_ACTION_ALLOWED) {
 			char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
