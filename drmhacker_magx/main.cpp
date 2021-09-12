@@ -119,8 +119,10 @@ int main(int argc, char *argv[]) {
 		char *lDrmSession = NULL;
 		int lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PREVIEW, NULL, false);
 		qDebug(QString("Info: DRM_StartRightsMeter try #1 return is '0x%1'.").arg(QString().setNum(lResult, 16)));
-		if (lResult != DRM_ACTION_ALLOWED)
+		if (lResult != DRM_ACTION_ALLOWED) {
 			lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, DRM_REQUEST_PLAY, NULL, false);
+			qDebug(QString("Info: DRM_StartRightsMeter try #2 return is '0x%1'.").arg(QString().setNum(lResult, 16)));
+		}
 		if (lResult == DRM_ACTION_ALLOWED) {
 			char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
 			if (lConsumptionPath) {
