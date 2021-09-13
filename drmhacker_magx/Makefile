@@ -11,7 +11,7 @@ ARMLIB      := $(TOOLPREFIX)/arm-linux-gnueabi/lib
 ####### Default Platform
 QTDIR       := $(TOOLPREFIX)/lib/qt-zn5
 EZXDIR      := $(TOOLPREFIX)/lib/ezx-zn5
-LINKLIB     := -lqte-mt -ldrmfwudaclient_no_ui -lezxdrmcipher -lezxdrmclibhack -lezxdrmsp -lezx_mp_playerengine -lezxpm
+LINKLIB     := -ldrmfwudaclient_no_ui -lezxdrmsp -lezxdrmcipher -lezxdrmclibhack -lezx_mp_playerengine -lqte-mt
 DIRECTIV    := -DEZX_ZN5 $(APP_DEFINES)
 TARGET       = $(APPNAME)
 

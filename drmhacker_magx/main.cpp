@@ -1,16 +1,26 @@
 /*
+ * About:
+ *   This is source code of "drmhacker_magx" utility for decrypting OMA DRM files on Motorola MotoMAGX platform.
+ *
+ * Author:
+ *   EXL
+ *
+ * License:
+ *   MIT
+ *
  * History:
- * 14-Sep-2021: Added Media Player and Rington engines creation.
- * 13-Sep-2021: Added loop for DRM_StartRightsMeter() function.
- * 12-Sep-2021: Added DRM_SP_* functions.
- * 30-Aug-2021: Added DRM_* functions.
- * 14-Jun-2021: First draft version.
+ *   14-Sep-2021: Added Media Player and Ringtone engines with finder file function.
+ *   13-Sep-2021: Added loop for DRM_StartRightsMeter() function.
+ *   12-Sep-2021: Added DRM_SP_* functions.
+ *   30-Aug-2021: Added DRM_* functions.
+ *   14-Jun-2021: First draft version.
  *
  * Flow:
- * 1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
- * 2. DRM_SP_Register() => fopen()
+ *   1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
+ *   2. DRM_SP_Register() => fopen()
  *
- * Patch for MotoMAGX Toolchain & SDK: just copy actual MotoMAGX phone libraries from /usr/lib and /usr/lib/ezx/lib paths to your environment.
+ * Information:
+ *   Before building copy actual phone libraries from /usr/lib and /usr/lib/ezx/lib directories to the MotoMAGX SDK!
  */
 
 // C
@@ -18,6 +28,7 @@
 
 // Qt
 #include <qdatastream.h>
+#include <qdir.h>
 #include <qfile.h>
 #include <qglobal.h>
 #include <qobject.h>
@@ -132,6 +143,15 @@ static int CopyFile(const QString &aPathIn, const QString& aPathOut) {
 	return 1;
 }
 
+static QString FindFileInDirectoryByMask(const QString &aMask) {
+	QDir lDirectory("/mnt/drmfs/");
+	const int lFilesCount = lDirectory.count();
+	for (int i = 0; i < lFilesCount; ++i)
+		if (lDirectory[i].contains(aMask))
+			return lDirectory[i];
+	return QString::null;
+}
+
 static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
 	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
 //	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE(2);
@@ -147,7 +167,11 @@ static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
 	lMP_PlayerEngine->open(aPathIn);
 //	lMP_PlayerEngine->open(aPathIn, false);
 //	lMP_PlayerEngine->open(aPathIn, true);
+
 	lMP_PlayerEngine->play();
+
+	CopyFile(FindFileInDirectoryByMask(aPathIn), aPathOut);
+
 //	lMP_PlayerEngine->play(false);
 //	lMP_PlayerEngine->play(true);
 	lMP_PlayerEngine->close();
