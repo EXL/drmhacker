@@ -1,17 +1,16 @@
 /*
  * History:
- * 12-Sep-2021: Refactor code.
- * 30-Aug-2021: Clean version.
- * 14-Jun-2021: Draft version.
+ * 14-Sep-2021: Added Media Player and Rington engines creation.
+ * 13-Sep-2021: Added loop for DRM_StartRightsMeter() function.
+ * 12-Sep-2021: Added DRM_SP_* functions.
+ * 30-Aug-2021: Added DRM_* functions.
+ * 14-Jun-2021: First draft version.
  *
  * Flow:
  * 1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
  * 2. DRM_SP_Register() => fopen()
  *
- * Patch for MotoMAGX Toolchain & SDK:
- * cp squashfs-root/usr/lib/ezx/lib/libdrmfwudaclient.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
- * rm squashfs-root/usr/lib/libxml2.so.2.6
- * cp squashfs-root/usr/lib/libxml2.so* /opt/toolchains/motomagx/arm-eabi/lib/ezx-zn5/lib/
+ * Patch for MotoMAGX Toolchain & SDK: just copy actual MotoMAGX phone libraries from /usr/lib and /usr/lib/ezx/lib paths to your environment.
  */
 
 // C
@@ -35,7 +34,7 @@ extern "C" {
 	#define DRM_SP_SUCCESS        0x00
 	#define DRM_SP_PLAY           0x01
 
-	extern char *DRM_IsDRMFile(char *aPathToFile);
+	extern int DRM_IsDRMFile(char *aPathToFile);
 	extern int DRM_StartRightsMeter(
 		char **aSession,
 		char *aPathToFile,
@@ -45,6 +44,7 @@ extern "C" {
 		int aUnknownBool
 	);
 	/*
+	 * TODO: Drop this!
 	extern int DRM_StartRightsMeter(
 		char **aSession,
 		char *aPathToFile,
