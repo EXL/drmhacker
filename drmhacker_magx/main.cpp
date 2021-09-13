@@ -20,6 +20,23 @@
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qglobal.h>
+#include <qobject.h>
+
+// EZX
+#include <ezxsound.h>
+
+class Ezx_VideoDevice;
+
+class MP_PlayerEngine : public QObject {
+	Q_OBJECT
+public:
+	virtual bool open(const char *aFileName, bool aUnknownBool = false) = 0;
+	virtual bool close() = 0;
+	virtual bool play(bool aUnknownBool = true) = 0;
+};
+
+MP_PlayerEngine *MP_CreatePlayerEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoDevice *);
+MP_PlayerEngine *MP_CreateRingtoneEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoDevice *);
 
 // DRM
 extern "C" {
@@ -115,51 +132,78 @@ static int CopyFile(const QString &aPathIn, const QString& aPathOut) {
 	return 1;
 }
 
-int main(int argc, char *argv[]) {
-	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 30-Aug-2021\n\n");
-	if (argc < 3)
-		return Usage();
+static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
+	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
+//	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE(2);
 
-//	if (DRM_IsDRMFile(argv[1])) { // It looks like this is not being used.
-		char *lDrmSession = NULL;
-		int lResult = 0;
-		for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_UNKNOWN_2; ++i) {
-			lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, i, NULL, false);
-			qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
-				.arg(QString().setNum(i)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
-			if (lResult == DRM_ACTION_ALLOWED)
-				break;
-		}
-		if (lResult == DRM_ACTION_ALLOWED) {
-			char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
-			if (lConsumptionPath) {
-				qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
-				if (CopyFile(lConsumptionPath, argv[2]))
-					qDebug(QString("Info: Uncrypted file '%1' was created.").arg(argv[2]));
-			} else {
-				qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
-				return 1;
-			}
-			free(lConsumptionPath);
+	MP_PlayerEngine *lMP_PlayerEngine = NULL;
+
+	if (1) { // Use Player Enigne mode.
+		lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
+	} else { // Use Ringtone Engine mode.
+		lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
+	}
+
+	lMP_PlayerEngine->open(aPathIn);
+//	lMP_PlayerEngine->open(aPathIn, false);
+//	lMP_PlayerEngine->open(aPathIn, true);
+	lMP_PlayerEngine->play();
+//	lMP_PlayerEngine->play(false);
+//	lMP_PlayerEngine->play(true);
+	lMP_PlayerEngine->close();
+
+	// delete lMP_PlayerEngine; // TODO:
+	lAmNormalDevInterface->close();
+	// delete lAmNormalDevInterface; // TODO:
+}
+
+int main(int argc, char *argv[]) {
+	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 30-Aug-2021\n\n"); // TODO: Fix date.
+	if (argc < 3 || argc > 4)
+		return Usage();
+	if (argc == 4) { // Use Media Player decryption mode.
+		return OpenPlayerForDecrypt(argv[2], argv[3]);
+	}
+	int lResult = DRM_IsDRMFile(argv[1]);
+	qDebug(QString("Info: DRM_IsDRMFile returned '0x%1'.").arg(QString().setNum(lResult, 16)));
+	char *lDrmSession = NULL;
+	for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_UNKNOWN_2; ++i) {
+		lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, i, NULL, false);
+		qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
+			.arg(QString().setNum(i)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
+		if (lResult == DRM_ACTION_ALLOWED)
+			break;
+		else {
 			DRM_StopRightsMeter(lDrmSession);
+			free(lDrmSession);
+		}
+	}
+	if (lResult == DRM_ACTION_ALLOWED) {
+		char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
+		if (lConsumptionPath) {
+			qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
+			if (CopyFile(lConsumptionPath, argv[2]))
+				qDebug(QString("Info: Uncrypted file '%1' was created.").arg(argv[2]));
 		} else {
-			qDebug("Warning: Looks like DRM_StartRightsMeter() function failed.");
-			qDebug("Warning: Trying another one method.");
-			DRM_SP_Register(argv[1], false);
-			QString lMediaFileName(argv[1]);
-			if (DRM_SP_ValidateRights(lMediaFileName, DRM_SP_PLAY, false) == DRM_SP_SUCCESS)
-				CopyFile(argv[1], argv[2]);
-			else
-				qDebug("Error: DRM_SP method not working.");
-			DRM_SP_UnRegister(argv[1]);
+			qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
 			return 1;
 		}
-		free(lDrmSession);
-		lDrmSession = NULL;
-//	} else {
-//		qDebug(QString("Error: File '%1' is not a DRM file!").arg(argv[1]));
-//		return 1;
-//	}
+		free(lConsumptionPath);
+		DRM_StopRightsMeter(lDrmSession);
+	} else {
+		qDebug("Warning: Looks like DRM_StartRightsMeter() function failed.");
+		qDebug("Warning: Trying another one method.");
+		DRM_SP_Register(argv[1], false);
+		QString lMediaFileName(argv[1]);
+		if (DRM_SP_ValidateRights(lMediaFileName, DRM_SP_PLAY, false) == DRM_SP_SUCCESS)
+			CopyFile(argv[1], argv[2]);
+		else
+			qDebug("Error: DRM_SP method not working.");
+		DRM_SP_UnRegister(argv[1]);
+		return 1;
+	}
+	free(lDrmSession);
+	lDrmSession = NULL;
 
 	return 0;
 }
