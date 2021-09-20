@@ -9,6 +9,7 @@
  *   MIT
  *
  * History:
+ *   20-Sep-2021: Some minor fixes and polish code.
  *   14-Sep-2021: Added Media Player and Ringtone engines with finder file function.
  *   13-Sep-2021: Added loop for DRM_StartRightsMeter() function.
  *   12-Sep-2021: Added DRM_SP_* functions.
@@ -71,17 +72,6 @@ extern "C" {
 		char *aUnknownPtrTwo,
 		int aUnknownBool
 	);
-	/*
-	 * TODO: Drop this!
-	extern int DRM_StartRightsMeter(
-		char **aSession,
-		char *aPathToFile,
-		int *aUnknownPtrOne,
-		int aAction,
-		int *aUnknownPtrTwo,
-		int aUnknownBool
-	);
-	*/
 	extern char *DRM_CreateConsumptionFilePath(
 		char *aSession,
 		int aUnknownBool,
@@ -106,6 +96,8 @@ static int Usage(void) {
 		"Examples:\n"
 		"\tdrmhacker_magx image.gif.dcf image.gif\n"
 		"\tdrmhacker_magx image.drm.gif image.gif\n"
+		"Alternative:\n"
+		"\tdrmhacker_magx player sound.mp3.dcf sound.mp3\n"
 	);
 	return 1;
 }
@@ -154,31 +146,29 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 
 static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
 	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
-//	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE(2);
-
 	MP_PlayerEngine *lMP_PlayerEngine = NULL;
-
-	if (1) { // Use Player Enigne mode.
+	if (0) { // Use Player Enigne mode.
 		lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
 	} else { // Use Ringtone Engine mode.
 		lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
 	}
-
+	fprintf(stderr, "1\n");
 	lMP_PlayerEngine->open(aPathIn);
 //	lMP_PlayerEngine->open(aPathIn, false);
 //	lMP_PlayerEngine->open(aPathIn, true);
-
+	fprintf(stderr, "2\n");
 	lMP_PlayerEngine->play();
-
+	fprintf(stderr, "3\n");
 	CopyFile(FindFileInDirectoryByMask(aPathIn), aPathOut);
-
+	fprintf(stderr, "4\n");
 //	lMP_PlayerEngine->play(false);
 //	lMP_PlayerEngine->play(true);
 	lMP_PlayerEngine->close();
-
+	fprintf(stderr, "5\n");
 	// delete lMP_PlayerEngine; // TODO:
 	lAmNormalDevInterface->close();
 	// delete lAmNormalDevInterface; // TODO:
+	fprintf(stderr, "6\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -194,7 +184,7 @@ int main(int argc, char *argv[]) {
 	for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_UNKNOWN_2; ++i) {
 		lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, i, NULL, false);
 		qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
-			.arg(QString().setNum(i)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
+			.arg(QString().setNum(i + 1)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
 		if (lResult == DRM_ACTION_ALLOWED)
 			break;
 		else {
@@ -228,6 +218,5 @@ int main(int argc, char *argv[]) {
 	}
 	free(lDrmSession);
 	lDrmSession = NULL;
-
 	return 0;
 }
