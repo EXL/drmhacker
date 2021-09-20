@@ -54,12 +54,14 @@ MP_PlayerEngine *MP_CreateRingtoneEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoD
 extern "C" {
 	#define	DRM_ACTION_ALLOWED    0x7D2 // 2002, success return code
 	#define	DRM_SOME_ERROR        0x7D0 // 2000, some error return code
+
 	#define DRM_REQUEST_PLAY      0x00  // Probably
 	#define DRM_REQUEST_PREVIEW   0x01  // Probably
 	#define DRM_REQUEST_EXECUTE   0x02  // Probably
 	#define DRM_REQUEST_PRINT     0x03  // Probably
 	#define DRM_REQUEST_UNKNOWN_1 0x04  // ??
 	#define DRM_REQUEST_UNKNOWN_2 0x05  // ??
+
 	#define DRM_SP_SUCCESS        0x00
 	#define DRM_SP_PLAY           0x01
 
@@ -96,7 +98,7 @@ static int Usage(void) {
 		"Examples:\n"
 		"\tdrmhacker_magx image.gif.dcf image.gif\n"
 		"\tdrmhacker_magx image.drm.gif image.gif\n"
-		"Alternative:\n"
+		"Alternative (not tested yet):\n"
 		"\tdrmhacker_magx player sound.mp3.dcf sound.mp3\n"
 	);
 	return 1;
@@ -172,7 +174,7 @@ static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
 }
 
 int main(int argc, char *argv[]) {
-	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 30-Aug-2021\n\n"); // TODO: Fix date.
+	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 20-Sep-2021\n\n");
 	if (argc < 3 || argc > 4)
 		return Usage();
 	if (argc == 4) { // Use Media Player decryption mode.
