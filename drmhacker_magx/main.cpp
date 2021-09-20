@@ -18,7 +18,7 @@
  *
  * Flow:
  *   1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
- *   2. DRM_SP_Register() => fopen()
+ *   2. DRM_SP_SetClibDefaultAction() => DRM_SP_Register() => fopen()
  *
  * Information:
  *   Before building copy actual phone libraries from /usr/lib and /usr/lib/ezx/lib directories to the MotoMAGX SDK!
