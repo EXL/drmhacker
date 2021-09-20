@@ -9,7 +9,7 @@
  *   MIT
  *
  * History:
- *   20-Sep-2021: Some minor fixes and polish code.
+ *   20-Sep-2021: Added some minor fixes, polish and refactoring code.
  *   14-Sep-2021: Added Media Player and Ringtone engines with finder file function.
  *   13-Sep-2021: Added loop for DRM_StartRightsMeter() function.
  *   12-Sep-2021: Added DRM_SP_* functions.
@@ -64,11 +64,12 @@ extern "C" {
 
 	#define DRM_SP_SUCCESS        0x00
 	#define DRM_SP_PLAY           0x01
+	#define DRM_SP_ACTION_ENCRYPT 0x01
 
-	extern int DRM_IsDRMFile(char *aPathToFile);
+	extern int DRM_IsDRMFile(const char *aPathToFile);
 	extern int DRM_StartRightsMeter(
 		char **aSession,
-		char *aPathToFile,
+		const char *aPathToFile,
 		char *aUnknownPtrOne,
 		int aAction,
 		char *aUnknownPtrTwo,
@@ -85,6 +86,7 @@ extern "C" {
 	extern void DRM_SP_Register(const char *aFileName, int aReserved);
 	extern void DRM_SP_UnRegister(const char *aFileName);
 	extern int DRM_SP_ValidateRights(const char *aFileName, int aAction, int aUnknownBool);
+	extern int DRM_SP_SetClibDefaultAction(int aAction);
 }
 
 static int Usage(void) {
@@ -94,12 +96,13 @@ static int Usage(void) {
 		"Source code:\n"
 		"\thttps://github.com/EXL/drmhacker\n"
 		"Usage:\n"
-		"\tdrmhacker_magx <in-file-path> <out-file-path>\n"
+		"\tdrmhacker_magx <method> <in-file-path> <out-file-path>\n"
 		"Examples:\n"
-		"\tdrmhacker_magx image.gif.dcf image.gif\n"
-		"\tdrmhacker_magx image.drm.gif image.gif\n"
-		"Alternative (not tested yet):\n"
-		"\tdrmhacker_magx player sound.mp3.dcf sound.mp3\n"
+		"\t./drmhacker_magx image.gif.dcf image.gif # Using Standard DRM API decryption mode (default).\n"
+		"\t./drmhacker_magx image.drm.gif image.gif # Using Standard DRM API decryption mode (default).\n\n"
+		"\t./drmhacker_magx drm sound.mp3.dcf sound.mp3 # Using Standard DRM API decryption mode.\n"
+		"\t./drmhacker_magx drm_sp sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode.\n"
+		"\t./drmhacker_magx player sound.mp3.dcf sound.mp3 # Using Media Player API decryption mode (not tested yet).\n"
 	);
 	return 1;
 }
@@ -146,7 +149,8 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 	return QString::null;
 }
 
-static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
+static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOut) {
+	qDebug("Information: using Media Player API decryption mode.");
 	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
 	MP_PlayerEngine *lMP_PlayerEngine = NULL;
 	if (0) { // Use Player Enigne mode.
@@ -171,20 +175,32 @@ static bool OpenPlayerForDecrypt(const char *aPathIn, const char *aPathOut) {
 	lAmNormalDevInterface->close();
 	// delete lAmNormalDevInterface; // TODO:
 	fprintf(stderr, "6\n");
+	return 0; // TODO: Determine errors
 }
 
-int main(int argc, char *argv[]) {
-	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 20-Sep-2021\n\n");
-	if (argc < 3 || argc > 4)
-		return Usage();
-	if (argc == 4) { // Use Media Player decryption mode.
-		return OpenPlayerForDecrypt(argv[2], argv[3]);
+static int ModeDrmSpApiForDecrypt(const char *aPathIn, const char *aPathOut) {
+	qDebug("Information: using DRM SP API decryption mode.");
+	int lResult = 0;
+	DRM_SP_SetClibDefaultAction(DRM_SP_ACTION_ENCRYPT);
+	DRM_SP_Register(aPathIn, false);
+	QString lMediaFileName(aPathIn);
+	if (DRM_SP_ValidateRights(lMediaFileName, DRM_SP_PLAY, false) == DRM_SP_SUCCESS)
+		CopyFile(aPathIn, aPathOut);
+	else {
+		qDebug("Error: DRM SP API method not working.");
+		lResult = 1;
 	}
-	int lResult = DRM_IsDRMFile(argv[1]);
+	DRM_SP_UnRegister(aPathIn);
+	return lResult;
+}
+
+static int ModeStandardDrmApiForDecrypt(const char *aPathIn, const char *aPathOut) {
+	qDebug("Information: using Standard DRM API decryption mode.");
+	int lResult = DRM_IsDRMFile(aPathIn);
 	qDebug(QString("Info: DRM_IsDRMFile returned '0x%1'.").arg(QString().setNum(lResult, 16)));
 	char *lDrmSession = NULL;
 	for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_UNKNOWN_2; ++i) {
-		lResult = DRM_StartRightsMeter(&lDrmSession, argv[1], NULL, i, NULL, false);
+		lResult = DRM_StartRightsMeter(&lDrmSession, aPathIn, NULL, i, NULL, false);
 		qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
 			.arg(QString().setNum(i + 1)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
 		if (lResult == DRM_ACTION_ALLOWED)
@@ -195,30 +211,35 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if (lResult == DRM_ACTION_ALLOWED) {
-		char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, argv[1], 0);
+		char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, aPathIn, 0);
 		if (lConsumptionPath) {
 			qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
-			if (CopyFile(lConsumptionPath, argv[2]))
-				qDebug(QString("Info: Uncrypted file '%1' was created.").arg(argv[2]));
+			if (CopyFile(lConsumptionPath, aPathOut))
+				qDebug(QString("Info: Uncrypted file '%1' was created.").arg(aPathOut));
 		} else {
 			qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
 			return 1;
 		}
 		free(lConsumptionPath);
 		DRM_StopRightsMeter(lDrmSession);
-	} else {
-		qDebug("Warning: Looks like DRM_StartRightsMeter() function failed.");
-		qDebug("Warning: Trying another one method.");
-		DRM_SP_Register(argv[1], false);
-		QString lMediaFileName(argv[1]);
-		if (DRM_SP_ValidateRights(lMediaFileName, DRM_SP_PLAY, false) == DRM_SP_SUCCESS)
-			CopyFile(argv[1], argv[2]);
-		else
-			qDebug("Error: DRM_SP method not working.");
-		DRM_SP_UnRegister(argv[1]);
-		return 1;
-	}
+	} else
+		qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
 	free(lDrmSession);
 	lDrmSession = NULL;
 	return 0;
+}
+
+int main(int argc, char *argv[]) {
+	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 20-Sep-2021\n\n");
+	if (argc < 3 || argc > 4)
+		return Usage();
+	if (argc == 4) {
+		if (strstr(argv[1], "player"))
+			return ModeMediaPlayerApiForDecrypt(argv[2], argv[3]);
+		else if(strstr(argv[1], "drm_sp"))
+			return ModeDrmSpApiForDecrypt(argv[2], argv[3]);
+		else
+			return ModeStandardDrmApiForDecrypt(argv[2], argv[3]);
+	}
+	return ModeStandardDrmApiForDecrypt(argv[1], argv[2]);
 }
