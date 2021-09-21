@@ -152,30 +152,27 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOut) {
 	qDebug("Information: using Media Player API decryption mode.");
 	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
-	MP_PlayerEngine *lMP_PlayerEngine = NULL;
-	if (0) { // Use Player Enigne mode.
-		lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
-	} else { // Use Ringtone Engine mode.
-		lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
-	}
-	fprintf(stderr, "1\n");
-	lMP_PlayerEngine->open(aPathIn);
+
+	MP_PlayerEngine *lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
+//	MP_PlayerEngine *lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
+
 //	lMP_PlayerEngine->open(aPathIn, false);
 //	lMP_PlayerEngine->open(aPathIn, true);
-	fprintf(stderr, "2\n");
+	lMP_PlayerEngine->open(aPathIn);
+
+//	TODO: Why there is segmentation fault?
 	lMP_PlayerEngine->play();
-	fprintf(stderr, "3\n");
-	CopyFile(FindFileInDirectoryByMask(aPathIn), aPathOut);
-	fprintf(stderr, "4\n");
 //	lMP_PlayerEngine->play(false);
 //	lMP_PlayerEngine->play(true);
+
+	CopyFile(FindFileInDirectoryByMask(aPathIn), aPathOut);
+
 	lMP_PlayerEngine->close();
-	fprintf(stderr, "5\n");
-	// delete lMP_PlayerEngine; // TODO:
+	delete lMP_PlayerEngine;
+
 	lAmNormalDevInterface->close();
-	// delete lAmNormalDevInterface; // TODO:
-	fprintf(stderr, "6\n");
-	return 0; // TODO: Determine errors
+	delete lAmNormalDevInterface;
+	return 0;
 }
 
 static int ModeDrmSpApiForDecrypt(const char *aPathIn, const char *aPathOut) {
