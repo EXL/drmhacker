@@ -4,10 +4,10 @@
 
 if [ -z $1 ]
 then
-    echo "EZX DRM hacker by Borman"
-    echo "wrapper script"
-    echo "Usage: `basename $0` <path_to_protected_java>"
-    exit
+	echo "EZX DRM hacker by Borman"
+	echo "wrapper script"
+	echo "Usage: `basename $0` <path_to_protected_java>"
+	exit
 fi
 
 DIR=`pwd`
