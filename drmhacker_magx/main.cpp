@@ -9,6 +9,7 @@
  *   MIT
  *
  * History:
+ *   21-Sep-2021: Added loop for DRM_SP_ValidateRights() function.
  *   20-Sep-2021: Added some minor fixes, polish and refactoring code.
  *   14-Sep-2021: Added Media Player and Ringtone engines with finder file function.
  *   13-Sep-2021: Added loop for DRM_StartRightsMeter() function.
@@ -52,18 +53,22 @@ MP_PlayerEngine *MP_CreateRingtoneEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoD
 
 // DRM
 extern "C" {
-	#define	DRM_ACTION_ALLOWED    0x7D2 // 2002, success return code
-	#define	DRM_SOME_ERROR        0x7D0 // 2000, some error return code
+	#define	DRM_ACTION_ALLOWED     0x7D2 // 2002, success return code
+	#define	DRM_SOME_ERROR         0x7D0 // 2000, some error return code
 
-	#define DRM_REQUEST_PLAY      0x00  // Probably
-	#define DRM_REQUEST_PREVIEW   0x01  // Probably
-	#define DRM_REQUEST_EXECUTE   0x02  // Probably
-	#define DRM_REQUEST_PRINT     0x03  // Probably
-	#define DRM_REQUEST_UNKNOWN_1 0x04  // ??
-	#define DRM_REQUEST_UNKNOWN_2 0x05  // ??
+	#define DRM_REQUEST_PLAY       0x00  // Probably
+	#define DRM_REQUEST_DISPLAY    0x01  // Probably
+	#define DRM_REQUEST_EXECUTE    0x02  // Probably
+	#define DRM_REQUEST_PRINT      0x03  // Probably
+	#define DRM_REQUEST_EXPORT     0x04  // Probably
+
+	#define DRM_SP_REQUEST_DISPLAY 0x00  // Probably
+	#define DRM_SP_REQUEST_PLAY    0x01  // Probably
+	#define DRM_SP_REQUEST_EXECUTE 0x02  // Probably
+	#define DRM_SP_REQUEST_PRINT   0x03  // Probably
+	#define DRM_SP_REQUEST_EXPORT  0x04  // Probably
 
 	#define DRM_SP_SUCCESS        0x00
-	#define DRM_SP_PLAY           0x01
 	#define DRM_SP_ACTION_ENCRYPT 0x01
 
 	extern int DRM_IsDRMFile(const char *aPathToFile);
@@ -150,7 +155,7 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 }
 
 static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	qDebug("Information: using Media Player API decryption mode.");
+	qDebug("Info: using Media Player API decryption mode.");
 	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
 
 	MP_PlayerEngine *lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
@@ -176,27 +181,33 @@ static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOu
 }
 
 static int ModeDrmSpApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	qDebug("Information: using DRM SP API decryption mode.");
-	int lResult = 0;
+	qDebug("Info: using DRM SP API decryption mode.");
+	int lResult = -1;
 	DRM_SP_SetClibDefaultAction(DRM_SP_ACTION_ENCRYPT);
 	DRM_SP_Register(aPathIn, false);
 	QString lMediaFileName(aPathIn);
-	if (DRM_SP_ValidateRights(lMediaFileName, DRM_SP_PLAY, false) == DRM_SP_SUCCESS)
+	for (int i = DRM_SP_REQUEST_DISPLAY; i <= DRM_SP_REQUEST_EXPORT; ++i) {
+		lResult = DRM_SP_ValidateRights(lMediaFileName, i, false);
+		qDebug(QString("Info: DRM_SP_ValidateRights try '%1', action '0x%2', return is '0x%3'.")
+			.arg(QString().setNum(i + 1)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
+		if (lResult == DRM_SP_SUCCESS)
+			break;
+	}
+	if (lResult == DRM_SP_SUCCESS)
 		CopyFile(aPathIn, aPathOut);
 	else {
 		qDebug("Error: DRM SP API method not working.");
 		lResult = 1;
 	}
-	DRM_SP_UnRegister(aPathIn);
 	return lResult;
 }
 
 static int ModeStandardDrmApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	qDebug("Information: using Standard DRM API decryption mode.");
+	qDebug("Info: using Standard DRM API decryption mode.");
 	int lResult = DRM_IsDRMFile(aPathIn);
 	qDebug(QString("Info: DRM_IsDRMFile returned '0x%1'.").arg(QString().setNum(lResult, 16)));
 	char *lDrmSession = NULL;
-	for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_UNKNOWN_2; ++i) {
+	for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_EXPORT; ++i) {
 		lResult = DRM_StartRightsMeter(&lDrmSession, aPathIn, NULL, i, NULL, false);
 		qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
 			.arg(QString().setNum(i + 1)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
