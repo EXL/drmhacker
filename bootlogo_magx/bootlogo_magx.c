@@ -1,5 +1,5 @@
 /*
- * MotoMAGX boot logo extractor by EXL, 23-Sep-2021.
+ * MotoMAGX Boot Logo Extractor by EXL, 23-Sep-2021.
  *
  * Converting CG42.smg code group to the BMP image.
  *
@@ -52,7 +52,7 @@ typedef struct {
 int32_t ErrUsage(void) {
 	fprintf(
 		stderr,
-		"MotoMAGX boot logo extractor by EXL, 23-Sep-2021\n\n"
+		"|MotoMAGX Boot Logo Extractor| by EXL, v1.0, 23-Sep-2021\n\n"
 		"Usage:\n"
 		"\t./bootlogo_magx <screen size> <CG42 SMG file> <BMP image file>\n\n"
 		"Example:\n"
