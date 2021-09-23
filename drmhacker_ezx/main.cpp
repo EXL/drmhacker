@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
-		printf("EZX DRM hacker by Borman\n"
+		printf("EZX DRM hacker by Borman, v1.0\n"
 		       "Usage: drmhacker <in-file> <out-file>\n");
 		return 1;
 	}

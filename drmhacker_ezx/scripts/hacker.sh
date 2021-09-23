@@ -4,7 +4,7 @@
 
 if [ -z $1 ]
 then
-	echo "EZX DRM hacker by Borman"
+	echo "EZX DRM hacker by Borman v1.0"
 	echo "wrapper script"
 	echo "Usage: `basename $0` <path_to_protected_java>"
 	exit
