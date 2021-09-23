@@ -67,7 +67,7 @@ int32_t ErrDisplay(const display_t *aDisplay) {
 }
 
 int32_t ErrFile(const char *aFileName, const char *aMode) {
-	fprintf(stderr, "Cannot open '%s' file for %s.", aFileName, aMode);
+	fprintf(stderr, "Cannot open '%s' file for %s.\n", aFileName, aMode);
 }
 
 int32_t ParseDisplay(display_t *aDisplay, const char *aScreenSize) {
