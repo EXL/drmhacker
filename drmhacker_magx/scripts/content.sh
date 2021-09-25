@@ -46,6 +46,10 @@ function copy_files {
 	cp --no-preserve=mode,ownership -v * "../../$2/picture/"
 	cd -
 
+	cd "$1/cli_picture/"
+	cp --no-preserve=mode,ownership -v * "../../$2/picture/"
+	cd -
+
 	cd "$1/poweroff/"
 	cp --no-preserve=mode,ownership -v * "../../$2/picture/"
 	cd -
