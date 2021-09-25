@@ -1,12 +1,14 @@
 /*
- * MotoMAGX Boot Logo Extractor by EXL, 23-Sep-2021.
+ * MotoMAGX Boot Logo Extractor by EXL
  *
- * Converting CG42.smg code group to the BMP image.
+ * Converting CG42.smg and CG41.smg code groups to the BMP images.
+ *
+ * Created: 23-Sep-2021
+ * Updated: 25-Sep-2021
  *
  * R         G         B         W         B         Y         C         M:
  * 00 00 FF  00 FF 00  FF 00 00  FF FF FF  00 00 00  00 FF FF  FF FF 00  FF 00 FF
  * 00 F0 03  C0 0F 00  3F 00 00  FF FF 03  00 00 00  C0 FF 03  FF 0F 00  3F F0 03
- *
  *
  * Compile:
  *  $ gcc bootlogo_magx.c -o bootlogo_magx
@@ -55,8 +57,10 @@ int32_t ErrUsage(void) {
 		"|MotoMAGX Boot Logo Extractor| by EXL, v1.0, 23-Sep-2021\n\n"
 		"Usage:\n"
 		"\t./bootlogo_magx <screen size> <CG42 SMG file> <BMP image file>\n\n"
+		"\t./bootlogo_magx <screen size> <CG41 SMG file> <BMP image file>\n\n"
 		"Example:\n"
 		"\t./bootlogo_magx 240x320 CG42.smg bootlogo.bmp\n"
+		"\t./bootlogo_magx 128x160 CG41.smg bootlogo_cli.bmp\n"
 	);
 	return 1;
 }
