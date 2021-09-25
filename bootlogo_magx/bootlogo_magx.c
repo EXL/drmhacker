@@ -11,7 +11,7 @@
  * 00 F0 03  C0 0F 00  3F 00 00  FF FF 03  00 00 00  C0 FF 03  FF 0F 00  3F F0 03
  *
  * Compile:
- *  $ gcc bootlogo_magx.c -o bootlogo_magx
+ *  $ gcc -Wall -pedantic -O2 bootlogo_magx.c -o bootlogo_magx
  */
 
 #include <stdio.h>
@@ -72,6 +72,7 @@ int32_t ErrDisplay(const display_t *aDisplay) {
 
 int32_t ErrFile(const char *aFileName, const char *aMode) {
 	fprintf(stderr, "Cannot open '%s' file for %s.\n", aFileName, aMode);
+	return 1;
 }
 
 int32_t ParseDisplay(display_t *aDisplay, const char *aScreenSize) {
