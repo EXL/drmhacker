@@ -12,7 +12,6 @@ ARMLIB      := $(TOOLPREFIX)/arm-linux-gnueabi/lib
 QTDIR       := $(TOOLPREFIX)/lib/qt-zn5
 EZXDIR      := $(TOOLPREFIX)/lib/ezx-zn5
 LINKLIB     := -ldrmfwudaclient_no_ui -lezxdrmsp -lezxdrmcipher -lezxdrmclibhack -lezx_mp_playerengine -lqte-mt
-DIRECTIV    := -DEZX_ZN5 $(APP_DEFINES)
 TARGET       = $(APPNAME)
 
 ####### Build Tools and Options
@@ -21,8 +20,8 @@ CC           = $(TOOLPREFIX)/bin/arm-linux-gnueabi-gcc
 CXX          = $(TOOLPREFIX)/bin/arm-linux-gnueabi-g++
 STRIP        = $(TOOLPREFIX)/bin/arm-linux-strip
 INCPATH      = -I. -I$(QTDIR)/include -I$(EZXDIR)/include -I $(TOOLPREFIX)/arm-linux-gnueabi/include
-CFLAGS       = -pipe -Wall -W -O2 -DNO_DEBUG $(DIRECTIV) $(INCPATH)
-CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -O2 -DNO_DEBUG $(DIRECTIV) $(INCPATH)
+CFLAGS       = -pipe -Wall -W -O2 -DNO_DEBUG $(INCPATH)
+CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -O2 -DNO_DEBUG $(INCPATH)
 LDLAGS       = -Wl,-rpath-link,$(EZXDIR)/lib
 LIBS         = -L$(EZXDIR)/lib -L$(ARMLIB) -L$(QTDIR)/lib $(LINKLIB)
 
