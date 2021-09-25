@@ -10,6 +10,7 @@ This program can be used to decrypt DRM files on Motorola EZX phones: A780, E680
 TODO: how to install toolchain/SDK, link
 
 ```
+. /opt/toolchains/motoezx/setenv-a1200-devezx.sh
 progen CONFIG+=thread LIBS="-lezxaid -lezxtapi" -o drmhacker_ezx.pro
 tmake drmhacker_ezx.pro -o Makefile.ezx
 make -f Makefile.ezx clean
@@ -21,6 +22,7 @@ make -f Makefile.ezx
 TODO: how to install toolchain/SDK, link
 
 ```
+. /opt/toolchains/motoe680/setenv-e680.sh
 progen CONFIG+=thread LIBS="-lezxjaid-xscale-r" -o drmhacker_e680.pro
 tmake drmhacker_e680.pro -o Makefile.e680
 make -f Makefile.e680 clean
