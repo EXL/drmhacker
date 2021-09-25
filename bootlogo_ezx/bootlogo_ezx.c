@@ -14,7 +14,7 @@
 #include <limits.h>
 
 static const uint32_t GIF_HEADER_PATTERN = 0x38464947; /* "GIF8" in GIF87a or GIF89a header magic. */
-static const uint32_t GIF_ENDING_PATTERN = 0xFFFFFF3B; /* "3B FF FF FF" GIF ending sequence. */
+static const uint32_t GIF_ENDING_PATTERN = 0xFFFFFF3B; /* "3B FF FF FF" GIF ending sequence.       */
 
 static int32_t ErrUsage(void) {
 	fprintf(
@@ -64,6 +64,8 @@ static int32_t FindImagesInFile(FILE *aReadFile) {
 			lCanWriteFlag = 1;
 			snprintf(lWriteFileName, PATH_MAX, "bootlogo_%d.gif", lCounter);
 			lGifFile = fopen(lWriteFileName, "wb");
+			if (!lGifFile)
+				return ErrFile(lWriteFileName, "write");
 		} else if (lByte == 0x3B && lCanWriteFlag /* ';' is ending byte. */
 				&& (GetNeedle(aReadFile, lGifFile, &lOffset, lCanWriteFlag) == GIF_ENDING_PATTERN)) {
 			fprintf(stdout, "Found GIF ending sequence on offset '%#lx'...\n", lOffset);
