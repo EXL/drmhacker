@@ -16,6 +16,7 @@ progen CONFIG+=thread LIBS="-lezxaid -lezxtapi" -o drmhacker_ezx.pro
 tmake drmhacker_ezx.pro -o Makefile.ezx
 make -f Makefile.ezx clean
 make -f Makefile.ezx
+arm-linux-gnu-strip -s drmhacker_ezx
 ```
 
 ## Build for E680/A780
@@ -29,6 +30,7 @@ progen CONFIG+=thread LIBS="-lezxjaid-xscale-r" -o drmhacker_e680.pro
 tmake drmhacker_e680.pro -o Makefile.e680
 make -f Makefile.e680 clean
 make -f Makefile.e680
+arm-linux-strip -s drmhacker_e680
 ```
 
 ## Example
