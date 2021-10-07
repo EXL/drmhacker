@@ -4,6 +4,8 @@
 *.tar
 
 bootlogo_magx/bootlogo_magx
+bootlogo_ezx/bootlogo_ezx
 drmhacker_magx/drmhacker_magx
+drmhacker_magx/drmhacker_magx_emu
 drmhacker_ezx/drmhacker_ezx
 drmhacker_ezx/drmhacker_e680
