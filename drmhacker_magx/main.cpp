@@ -1,6 +1,6 @@
 /*
  * About:
- *   This is source code of "drmhacker_magx" utility for decrypting OMA DRM files on Motorola MotoMAGX platform.
+ *   The "drmhacker_magx" utility for decrypting OMA DRM files on Motorola MotoMAGX platform.
  *
  * Author:
  *   EXL
