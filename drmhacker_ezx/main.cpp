@@ -8,8 +8,10 @@
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
-		printf("EZX DRM hacker by Borman, v1.0\n"
-		       "Usage: drmhacker <in-file> <out-file>\n");
+		printf(
+			"EZX DRM hacker by Borman, v1.0\n"
+			"Usage: drmhacker <in-file> <out-file>\n"
+		);
 		return 1;
 	}
 
@@ -18,11 +20,11 @@ int main(int argc, char **argv) {
 	J2ME_JAID_DRMFile drmFile(argv[1]);
 	QFile plainFile(argv[2]);
 	if (!drmFile.open(IO_ReadOnly)) {
-		printf("Error opening %s\n", argv[1]);
+		printf("Error opening drmFile for IO_ReadOnly: %s.\n", argv[1]);
 		return 1;
 	}
 	if (!plainFile.open(IO_WriteOnly)) {
-		printf("Error opening %s\n", argv[2]);
+		printf("Error opening plainFile for IO_WriteOnly: %s.\n", argv[2]);
 		return 1;
 	}
 
