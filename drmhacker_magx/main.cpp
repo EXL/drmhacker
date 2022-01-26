@@ -9,6 +9,7 @@
  *   MIT
  *
  * History:
+ *   27-Jan-2022: Dropped qDebug() in favor to fprintf() because new MotoMAGX devices cut logs in Qt library.
  *   21-Sep-2021: Added loop for DRM_SP_ValidateRights() function.
  *   20-Sep-2021: Added some minor fixes, polish and refactoring code.
  *   14-Sep-2021: Added Media Player and Ringtone engines with finder file function.
@@ -19,7 +20,7 @@
  *
  * Flow:
  *   1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
- *   2. DRM_SP_SetClibDefaultAction() => DRM_SP_Register() => fopen()
+ *   2. DRM_SP_SetClibDefaultAction() => DRM_SP_Register() => QFile::open() => fopen() => open()
  *
  * Information:
  *   Before building copy actual phone libraries from /usr/lib and /usr/lib/ezx/lib directories to the MotoMAGX SDK!
@@ -32,12 +33,12 @@
 #include <qdatastream.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qglobal.h>
 #include <qobject.h>
 
 // EZX
 #include <ezxsound.h>
 
+// TODO: Fix this reverse engineering class and segmentation faults.
 class Ezx_VideoDevice;
 
 class MP_PlayerEngine : public QObject {
@@ -53,20 +54,20 @@ MP_PlayerEngine *MP_CreateRingtoneEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoD
 
 // DRM
 extern "C" {
-	#define	DRM_ACTION_ALLOWED     0x7D2 // 2002, success return code
-	#define	DRM_SOME_ERROR         0x7D0 // 2000, some error return code
+	#define	DRM_ACTION_ALLOWED     0x7D2 // 2002, success return code.
+	#define	DRM_SOME_ERROR         0x7D0 // 2000, some error return code.
 
-	#define DRM_REQUEST_PLAY       0x00  // Probably
-	#define DRM_REQUEST_DISPLAY    0x01  // Probably
-	#define DRM_REQUEST_EXECUTE    0x02  // Probably
-	#define DRM_REQUEST_PRINT      0x03  // Probably
-	#define DRM_REQUEST_EXPORT     0x04  // Probably
+	#define DRM_REQUEST_PLAY       0x00  // Probably.
+	#define DRM_REQUEST_DISPLAY    0x01  // Probably.
+	#define DRM_REQUEST_EXECUTE    0x02  // Probably.
+	#define DRM_REQUEST_PRINT      0x03  // Probably.
+	#define DRM_REQUEST_EXPORT     0x04  // Probably.
 
-	#define DRM_SP_REQUEST_DISPLAY 0x00  // Probably
-	#define DRM_SP_REQUEST_PLAY    0x01  // Probably
-	#define DRM_SP_REQUEST_EXECUTE 0x02  // Probably
-	#define DRM_SP_REQUEST_PRINT   0x03  // Probably
-	#define DRM_SP_REQUEST_EXPORT  0x04  // Probably
+	#define DRM_SP_REQUEST_DISPLAY 0x00  // Probably.
+	#define DRM_SP_REQUEST_PLAY    0x01  // Probably.
+	#define DRM_SP_REQUEST_EXECUTE 0x02  // Probably.
+	#define DRM_SP_REQUEST_PRINT   0x03  // Probably.
+	#define DRM_SP_REQUEST_EXPORT  0x04  // Probably.
 
 	#define DRM_SP_SUCCESS        0x00
 	#define DRM_SP_ACTION_ENCRYPT 0x01
@@ -94,8 +95,17 @@ extern "C" {
 	extern int DRM_SP_SetClibDefaultAction(int aAction);
 }
 
+// Defines
+#ifndef NO_DEBUG
+#define logd(fmt, ...)    fprintf(stderr, fmt, ## __VA_ARGS__)
+#else
+#define logd(fmt, ...)    do { } while(0)
+#endif
+#define logi(fmt, ...)    fprintf(stdout, fmt, ## __VA_ARGS__)
+#define loge(fmt, ...)    fprintf(stderr, fmt, ## __VA_ARGS__)
+
 static int Usage(void) {
-	qDebug(
+	loge(
 		"Information:\n"
 		"\thttps://forum.motofan.ru/index.php?showtopic=1262\n" // TODO: Fix this link to actual!
 		"Source code:\n"
@@ -123,7 +133,7 @@ static void CopyFileAux(QFile &aFileFrom, QFile &aFileTo) {
 		if (lBlockSize < 0)
 			break;
 		lDataStreamOut.writeRawBytes(lBuffer, lBlockSize);
-		qDebug(QString("=> Written size: %1, buffer size: %2").arg(lBlockSizeAccumulator).arg(lBlockSize));
+		logi("=> Written size: '%d', buffer size: '%d'.\n", lBlockSizeAccumulator, lBlockSize);
 	}
 }
 
@@ -131,11 +141,11 @@ static int CopyFile(const QString &aPathIn, const QString& aPathOut) {
 	QFile lFileInput(aPathIn);
 	QFile lFileOutput(aPathOut);
 	if (!lFileInput.open(IO_ReadOnly)) {
-		qDebug(QString("Error: Cannot open input file '%1' to read!").arg(aPathIn));
+		loge("Error: Cannot open input file '%s' to read!\n", aPathIn.data());
 		return 0;
 	}
 	if (!lFileOutput.open(IO_WriteOnly)) {
-		qDebug(QString("Error: Cannot open file '%1' to write!").arg(aPathOut));
+		loge("Error: Cannot open file '%s' to write!\n", aPathOut.data());
 		lFileInput.close();
 		return 0;
 	}
@@ -155,7 +165,7 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 }
 
 static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	qDebug("Info: using Media Player API decryption mode.");
+	logi("Info: using Media Player API decryption mode.\n");
 	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
 
 	MP_PlayerEngine *lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
@@ -181,36 +191,31 @@ static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOu
 }
 
 static int ModeDrmSpApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	qDebug("Info: using DRM SP API decryption mode.");
+	logi("Info: using DRM SP API decryption mode.\n");
 	int lResult = -1;
 	DRM_SP_SetClibDefaultAction(DRM_SP_ACTION_ENCRYPT);
 	DRM_SP_Register(aPathIn, false);
 	QString lMediaFileName(aPathIn);
 	for (int i = DRM_SP_REQUEST_DISPLAY; i <= DRM_SP_REQUEST_EXPORT; ++i) {
 		lResult = DRM_SP_ValidateRights(lMediaFileName, i, false);
-		qDebug(QString("Info: DRM_SP_ValidateRights try '%1', action '0x%2', return is '0x%3'.")
-			.arg(QString().setNum(i + 1)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
+		logi("Info: DRM_SP_ValidateRights try '%d', action '0x%08X', return is '0x%08X'.\n", i + 1, i, lResult);
 		if (lResult == DRM_SP_SUCCESS)
 			break;
 	}
-	if (lResult == DRM_SP_SUCCESS)
-		CopyFile(aPathIn, aPathOut);
-	else {
-		qDebug("Error: DRM SP API method not working.");
-		lResult = 1;
-	}
+	if (lResult != DRM_SP_SUCCESS)
+		loge("Error: DRM SP API method may not work correctly but copy the file anyway.\n");
+	CopyFile(aPathIn, aPathOut);
 	return lResult;
 }
 
 static int ModeStandardDrmApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	qDebug("Info: using Standard DRM API decryption mode.");
+	logi("Info: using Standard DRM API decryption mode.\n");
 	int lResult = DRM_IsDRMFile(aPathIn);
-	qDebug(QString("Info: DRM_IsDRMFile returned '0x%1'.").arg(QString().setNum(lResult, 16)));
+	logi("Info: DRM_IsDRMFile returned '%d' (0x%08X).\n", lResult, lResult);
 	char *lDrmSession = NULL;
 	for (int i = DRM_REQUEST_PLAY; i <= DRM_REQUEST_EXPORT; ++i) {
 		lResult = DRM_StartRightsMeter(&lDrmSession, aPathIn, NULL, i, NULL, false);
-		qDebug(QString("Info: DRM_StartRightsMeter try '%1', action '0x%2', return is '0x%3'.")
-			.arg(QString().setNum(i + 1)).arg(QString().setNum(i, 16)).arg(QString().setNum(lResult, 16)));
+		logi("Info: DRM_StartRightsMeter try '%d', action '0x%08X', return is '0x%08X'.\n", i + 1, i, lResult);
 		if (lResult == DRM_ACTION_ALLOWED)
 			break;
 		else {
@@ -221,24 +226,24 @@ static int ModeStandardDrmApiForDecrypt(const char *aPathIn, const char *aPathOu
 	if (lResult == DRM_ACTION_ALLOWED) {
 		char *lConsumptionPath = DRM_CreateConsumptionFilePath(lDrmSession, false, aPathIn, 0);
 		if (lConsumptionPath) {
-			qDebug(QString("Info: Virtual file path for consumption is: '%1'").arg(QString(lConsumptionPath)));
+			logi("Info: Virtual file path for consumption is: '%s'.\n", lConsumptionPath);
 			if (CopyFile(lConsumptionPath, aPathOut))
-				qDebug(QString("Info: Uncrypted file '%1' was created.").arg(aPathOut));
+				logi("Info: Uncrypted file '%s' was created.\n", aPathOut);
 		} else {
-			qDebug("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.");
+			loge("Error: Looks like DRM_CreateConsumptionFilePath() returned NULL.\n");
 			return 1;
 		}
 		free(lConsumptionPath);
 		DRM_StopRightsMeter(lDrmSession);
 	} else
-		qDebug("Error: Looks like DRM_StartRightsMeter() function failed.");
+		loge("Error: Looks like DRM_StartRightsMeter() function failed.\n");
 	free(lDrmSession);
 	lDrmSession = NULL;
 	return 0;
 }
 
 int main(int argc, char *argv[]) {
-	qDebug("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 20-Sep-2021\n\n");
+	logi("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 27-Jan-2022\n\n");
 	if (argc < 3 || argc > 4)
 		return Usage();
 	if (argc == 4) {
