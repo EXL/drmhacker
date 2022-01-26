@@ -9,7 +9,8 @@
  *   MIT
  *
  * History:
- *   27-Jan-2022: Dropped qDebug() in favor to fprintf() because new MotoMAGX devices cut logs in Qt library.
+ *   27-Jan-2022: Added no register mode for DRM SP uncrypto method.
+ *   26-Jan-2022: Dropped qDebug() in favor to fprintf() because new MotoMAGX devices cut logs in Qt library.
  *   21-Sep-2021: Added loop for DRM_SP_ValidateRights() function.
  *   20-Sep-2021: Added some minor fixes, polish and refactoring code.
  *   14-Sep-2021: Added Media Player and Ringtone engines with finder file function.
@@ -117,6 +118,7 @@ static int Usage(void) {
 		"\t./drmhacker_magx image.drm.gif image.gif # Using Standard DRM API decryption mode (default).\n\n"
 		"\t./drmhacker_magx drm sound.mp3.dcf sound.mp3 # Using Standard DRM API decryption mode.\n"
 		"\t./drmhacker_magx drm_sp sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode.\n"
+		"\t./drmhacker_magx drm_sp_reg sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode and register type.\n"
 		"\t./drmhacker_magx player sound.mp3.dcf sound.mp3 # Using Media Player API decryption mode (not tested yet).\n"
 	);
 	return 1;
@@ -190,20 +192,22 @@ static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOu
 	return 0;
 }
 
-static int ModeDrmSpApiForDecrypt(const char *aPathIn, const char *aPathOut) {
+static int ModeDrmSpApiForDecrypt(const char *aPathIn, const char *aPathOut, bool aRegister) {
 	logi("Info: using DRM SP API decryption mode.\n");
 	int lResult = -1;
 	DRM_SP_SetClibDefaultAction(DRM_SP_ACTION_ENCRYPT);
 	DRM_SP_Register(aPathIn, false);
 	QString lMediaFileName(aPathIn);
-	for (int i = DRM_SP_REQUEST_DISPLAY; i <= DRM_SP_REQUEST_EXPORT; ++i) {
-		lResult = DRM_SP_ValidateRights(lMediaFileName, i, false);
-		logi("Info: DRM_SP_ValidateRights try '%d', action '0x%08X', return is '0x%08X'.\n", i + 1, i, lResult);
-		if (lResult == DRM_SP_SUCCESS)
-			break;
+	if (aRegister) {
+		for (int i = DRM_SP_REQUEST_DISPLAY; i <= DRM_SP_REQUEST_EXPORT; ++i) {
+			lResult = DRM_SP_ValidateRights(lMediaFileName, i, false);
+			logi("Info: DRM_SP_ValidateRights try '%d', action '0x%08X', return is '0x%08X'.\n", i + 1, i, lResult);
+			if (lResult == DRM_SP_SUCCESS)
+				break;
+		}
+		if (lResult != DRM_SP_SUCCESS)
+			loge("Error: DRM SP API method may not work correctly but copy the file anyway.\n");
 	}
-	if (lResult != DRM_SP_SUCCESS)
-		loge("Error: DRM SP API method may not work correctly but copy the file anyway.\n");
 	CopyFile(aPathIn, aPathOut);
 	return lResult;
 }
@@ -249,8 +253,10 @@ int main(int argc, char *argv[]) {
 	if (argc == 4) {
 		if (strstr(argv[1], "player"))
 			return ModeMediaPlayerApiForDecrypt(argv[2], argv[3]);
-		else if(strstr(argv[1], "drm_sp"))
-			return ModeDrmSpApiForDecrypt(argv[2], argv[3]);
+		else if (strstr(argv[1], "drm_sp_reg"))
+			return ModeDrmSpApiForDecrypt(argv[2], argv[3], true);
+		else if (strstr(argv[1], "drm_sp"))
+			return ModeDrmSpApiForDecrypt(argv[2], argv[3], false);
 		else
 			return ModeStandardDrmApiForDecrypt(argv[2], argv[3]);
 	}
