@@ -6,7 +6,7 @@
  * Created: 25-Sep-2021
  *
  * Compile:
- *  $ gcc -Wall -pedantic -O2 bootlogo_ezx.c -o bootlogo_ezx
+ *  $ gcc -Wall -Wextra -pedantic -O2 bootlogo_ezx.c -o bootlogo_ezx
  */
 
 #include <stdio.h>
