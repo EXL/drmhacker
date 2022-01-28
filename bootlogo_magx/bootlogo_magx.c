@@ -4,14 +4,14 @@
  * Converting CG42.smg and CG41.smg code groups to the BMP images.
  *
  * Created: 23-Sep-2021
- * Updated: 25-Sep-2021
+ * Updated: 28-Jan-2022
  *
  * R         G         B         W         B         Y         C         M:
  * 00 00 FF  00 FF 00  FF 00 00  FF FF FF  00 00 00  00 FF FF  FF FF 00  FF 00 FF
  * 00 F0 03  C0 0F 00  3F 00 00  FF FF 03  00 00 00  C0 FF 03  FF 0F 00  3F F0 03
  *
  * Compile:
- *  $ gcc -Wall -pedantic -O2 bootlogo_magx.c -o bootlogo_magx
+ *  $ gcc -Wall -Wextra -pedantic -O2 bootlogo_magx.c -o bootlogo_magx
  */
 
 #include <stdio.h>
@@ -19,7 +19,14 @@
 #include <stdlib.h>
 
 #define RGB666_TO_RGB888(color) \
-	((((color) & (0x3F << 0)) <<  2) | (((color) & (0x3F <<  6)) << 4) | (((color) & (0x3F << 12)) <<  6))
+	( (((color) & (0x3F <<  0)) <<  2) | \
+	(  ((color) & (0x3F <<  6)) <<  4) | \
+	(  ((color) & (0x3F << 12)) <<  6))
+
+#define RGB565_TO_RGB888(color) \
+	(  (((color & 0xFF) & 0xF8) << 16) | \
+	( ((((color & 0xFF) & 0x07) <<  5) | (((color >> 8) & 0xE0) >> 3)) << 8) | \
+	(   ((color >> 8)   & 0x1F) <<  3))
 
 typedef struct {
 	int32_t width;
@@ -57,10 +64,11 @@ static int32_t ErrUsage(void) {
 		"|MotoMAGX Boot Logo Extractor| by EXL, v1.0, 23-Sep-2021\n\n"
 		"Usage:\n"
 		"\t./bootlogo_magx <screen size> <CG42 SMG file> <BMP image file>\n\n"
-		"\t./bootlogo_magx <screen size> <CG41 SMG file> <BMP image file>\n\n"
+		"\t./bootlogo_magx <screen size> <CG41 SMG file> <BMP image file> <bpp>\n\n"
 		"Example:\n"
 		"\t./bootlogo_magx 240x320 CG42.smg bootlogo.bmp\n"
 		"\t./bootlogo_magx 128x160 CG41.smg bootlogo_cli.bmp\n"
+		"\t./bootlogo_magx 96x60 CG41.smg bootlogo_cli.bmp 16\n"
 	);
 	return 1;
 }
@@ -84,13 +92,24 @@ static int32_t ParseDisplay(display_t *aDisplay, const char *aScreenSize) {
 	return 0;
 }
 
-static uint32_t *CreateBitmapFromFile(FILE *aReadFile, const display_t *aDisplay) {
+static uint32_t *CreateBitmapFromFile(FILE *aReadFile, const display_t *aDisplay, const int aDepth) {
 	uint32_t *lBitmapRgb888 = malloc(aDisplay->size * sizeof(uint32_t));
 	for (int32_t y = 0; y < aDisplay->height; ++y)
 		for (int32_t x = 0; x < aDisplay->width; ++x) {
-			uint32_t lPixelRgb666 = 0x000000;
-			fread(&lPixelRgb666, 3, 1, aReadFile); /* RGB666 in RGB888, 3 bytes, 18-bit or 24-bit for color. */
-			lBitmapRgb888[x + y * aDisplay->width] = RGB666_TO_RGB888(lPixelRgb666);
+			switch (aDepth) {
+				default: {
+					uint32_t lPixelRgb666 = 0x000000;
+					fread(&lPixelRgb666, 3, 1, aReadFile); /* RGB666 in RGB888, 3 bytes, 18-bit or 24-bit for color. */
+					lBitmapRgb888[x + y * aDisplay->width] = RGB666_TO_RGB888(lPixelRgb666);
+					break;
+				}
+				case 16: {
+					uint32_t lPixelRgb565 = 0x000000;
+					fread(&lPixelRgb565, 2, 1, aReadFile); /* RGB565 in RGB888, 2 bytes, 16-bit for color. */
+					lBitmapRgb888[x + y * aDisplay->width] = RGB565_TO_RGB888(lPixelRgb565);
+					break;
+				}
+			}
 		}
 	return lBitmapRgb888;
 }
@@ -128,7 +147,7 @@ int main(int argc, char *argv[]) {
 	FILE *lSmgFile = fopen(argv[2], "rb");
 	if (!lSmgFile)
 		return ErrFile(argv[2], "read");
-	uint32_t *lBitmap = CreateBitmapFromFile(lSmgFile, &lScreen);
+	uint32_t *lBitmap = CreateBitmapFromFile(lSmgFile, &lScreen, (argc == 5) ? atoi(argv[4]) : 0);
 	fclose(lSmgFile);
 
 	FILE *lBmpFile = fopen(argv[3], "wb");
