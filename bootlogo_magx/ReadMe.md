@@ -16,5 +16,5 @@ Example:
 ```bash
 ./bootlogo_magx 240x320 CG42.smg bootlogo.bmp
 ./bootlogo_magx 128x160 CG41.smg bootlogo_cli.bmp
-./bootlogo_magx 96x60 CG41.smg bootlogo_cli.bmp 16
+./bootlogo_magx 96x80 CG41.smg bootlogo_cli.bmp 16
 ```

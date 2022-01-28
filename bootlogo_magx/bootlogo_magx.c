@@ -68,7 +68,7 @@ static int32_t ErrUsage(void) {
 		"Example:\n"
 		"\t./bootlogo_magx 240x320 CG42.smg bootlogo.bmp\n"
 		"\t./bootlogo_magx 128x160 CG41.smg bootlogo_cli.bmp\n"
-		"\t./bootlogo_magx 96x60 CG41.smg bootlogo_cli.bmp 16\n"
+		"\t./bootlogo_magx 96x80 CG41.smg bootlogo_cli.bmp 16\n"
 	);
 	return 1;
 }
