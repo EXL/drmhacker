@@ -61,7 +61,7 @@ typedef struct {
 static int32_t ErrUsage(void) {
 	fprintf(
 		stderr,
-		"|MotoMAGX Boot Logo Extractor| by EXL, v1.0, 23-Sep-2021\n\n"
+		"|MotoMAGX Boot Logo Extractor| by EXL, v1.0, 28-Jan-2022\n\n"
 		"Usage:\n"
 		"\t./bootlogo_magx <screen size> <CG42 SMG file> <BMP image file>\n\n"
 		"\t./bootlogo_magx <screen size> <CG41 SMG file> <BMP image file> <bpp>\n\n"
