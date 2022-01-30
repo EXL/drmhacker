@@ -41,7 +41,7 @@ if __name__ == '__main__':
 	print('Version: 1.0, (c) EXL, 29-Jan-2022\n')
 	if len(sys.argv) != 2:
 		print('Usage:')
-		print('\t./drop_ttfs.py CG35.smg')
-		print('\t./drop_ttfs.py CG38.smg')
+		print('\t./drop_tffs.py CG35.smg')
+		print('\t./drop_tffs.py CG38.smg')
 		exit(1)
 	main(sys.argv[1])
