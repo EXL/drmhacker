@@ -1,0 +1,52 @@
+# This Makefile was edited by EXL, 16-Jan-2022
+# Default MotoMAGX platform is MotoMAGX Emulator.
+
+####### Config
+APPNAME     := playm_emu
+
+####### SDK and Toolchains
+TOOLPREFIX  := /opt/toolchains/motomagx/emulator
+
+####### Default Platform
+LINKLIB     := -ldrmfwudaclient_no_ui -lezx_mp_playerengine -lqte-mt
+TARGET       = $(APPNAME)
+
+####### Build Tools and Options
+MOC          = $(TOOLPREFIX)/bin/moc
+CC           = $(TOOLPREFIX)/bin/i686-mot-linux-gnu-gcc
+CXX          = $(TOOLPREFIX)/bin/i686-mot-linux-gnu-g++
+STRIP        = $(TOOLPREFIX)/bin/i686-mot-linux-gnu-strip
+INCPATH      = -I. -I.. -I$(TOOLPREFIX)/include
+CFLAGS       = -pipe -Wall -W -g -DDEBUG $(INCPATH)
+CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -g -DDEBUG $(INCPATH)
+LDLAGS       = -Wl,-rpath-link,$(TOOLPREFIX)/lib
+LIBS         = -L$(TOOLPREFIX)/lib $(LINKLIB)
+
+####### Files
+SOURCES      = playm.cpp
+OBJECTS      = playm.o
+SRCMOC       = playm.moc
+
+all: $(SRCMOC) $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CXX) $(LDLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+	# $(STRIP) -s $(TARGET)
+
+moc: $(SRCMOC)
+
+tar: $(TARGET)
+	-tar -cvf $(TARGET).tar $(TARGET)
+
+rmobj:
+	-rm -f $(OBJECTS)
+	-rm -f *~ core
+	$(RM) *.o
+	$(RM) *.moc
+
+clean: rmobj
+	$(RM) $(TARGET) *.tar
+
+#--------- moc's -----------------------------
+playm.moc: playm.cpp
+	$(MOC) playm.cpp -o playm.moc

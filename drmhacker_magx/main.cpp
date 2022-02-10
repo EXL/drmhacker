@@ -9,6 +9,7 @@
  *   MIT
  *
  * History:
+ *   11-Feb-2022: ~~~~~
  *   27-Jan-2022: Added no register mode for DRM SP uncrypto method.
  *   26-Jan-2022: Dropped qDebug() in favor to fprintf() because new MotoMAGX devices cut logs in Qt library.
  *   21-Sep-2021: Added loop for DRM_SP_ValidateRights() function.
@@ -34,24 +35,10 @@
 #include <qdatastream.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qobject.h>
 
 // EZX
 #include <ezxsound.h>
-
-// TODO: Fix this reverse engineering class and segmentation faults.
-class Ezx_VideoDevice;
-
-class MP_PlayerEngine : public QObject {
-	Q_OBJECT
-public:
-	virtual bool open(const char *aFileName, bool aUnknownBool = false) = 0;
-	virtual bool close() = 0;
-	virtual bool play(bool aUnknownBool = true) = 0;
-};
-
-MP_PlayerEngine *MP_CreatePlayerEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoDevice *);
-MP_PlayerEngine *MP_CreateRingtoneEngine(AM_VIRTUAL_DEV_BASE_CLASS *, Ezx_VideoDevice *);
+#include <MP_PlayerEngine.h>
 
 // DRM
 extern "C" {
@@ -168,21 +155,41 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 
 static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOut) {
 	logi("Info: using Media Player API decryption mode.\n");
-	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
+
+	loge("1\n");
+
+	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE((SOUNDM_AUDIO_NORMALDEV_TYPE_ENUM_T) 2, 8000, 1, 2);
+
+	QFileInfo f(aPathIn);
 
 	MP_PlayerEngine *lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
+
+	loge("2\n");
+
 //	MP_PlayerEngine *lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
 
 //	lMP_PlayerEngine->open(aPathIn, false);
 //	lMP_PlayerEngine->open(aPathIn, true);
-	lMP_PlayerEngine->open(aPathIn);
+
+	loge("2: %s\n", QFile::encodeName(f.absFilePath()).data());
+
+	lMP_PlayerEngine->open(QFile::encodeName(f.absFilePath()));
+
+	loge("3\n");
 
 //	TODO: Why there is segmentation fault?
+
 	lMP_PlayerEngine->play();
+
+	loge("4\n");
 //	lMP_PlayerEngine->play(false);
 //	lMP_PlayerEngine->play(true);
 
+	loge("5\n");
+
 	CopyFile(FindFileInDirectoryByMask(aPathIn), aPathOut);
+
+	loge("6\n");
 
 	lMP_PlayerEngine->close();
 	delete lMP_PlayerEngine;
