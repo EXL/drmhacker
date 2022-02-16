@@ -1,8 +1,8 @@
-# This Makefile was edited by EXL, 16-Jan-2022
+# This Makefile was edited by EXL, 16-Feb-2022
 # Default MotoMAGX platform is Motorola ZINE ZN5
 
 ####### Config
-APPNAME     := playm
+APPNAME     := playm_ZN5
 
 ####### SDK and Toolchains
 TOOLPREFIX  := /arm-eabi
@@ -11,7 +11,7 @@ ARMLIB      := $(TOOLPREFIX)/arm-linux-gnueabi/lib
 ####### Default Platform
 QTDIR       := $(TOOLPREFIX)/lib/qt-zn5
 EZXDIR      := $(TOOLPREFIX)/lib/ezx-zn5
-LINKLIB     := -ldrmfwudaclient_no_ui -lezx_mp_playerengine -lqte-mt
+LINKLIB     := -lezx_mp_playerengine -lqte-mt
 TARGET       = $(APPNAME)
 
 ####### Build Tools and Options

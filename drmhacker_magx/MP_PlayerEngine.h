@@ -8,6 +8,7 @@ class StaticStreamInfo;
 class DynamicStreamInfo;
 class MediaClipInfo;
 class MediaMetaInfo;
+class AM_VIRTUAL_DEV_BASE_CLASS;
 
 class MP_PlayerEngine : public QObject {
 	Q_OBJECT

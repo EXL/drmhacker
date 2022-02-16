@@ -1,8 +1,8 @@
-# This Makefile was edited by EXL, 16-Jan-2022
+# This Makefile was edited by EXL, 16-Feb-2022
 # Default MotoMAGX platform is MotoMAGX Emulator.
 
 ####### Config
-APPNAME     := playm_emu
+APPNAME     := playm_EMU
 
 ####### SDK and Toolchains
 TOOLPREFIX  := /opt/toolchains/motomagx/emulator

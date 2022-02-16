@@ -1,0 +1,55 @@
+# This Makefile was edited by EXL, 16-Feb-2022
+# Default EZX platform is Motorola MING A1200
+
+####### Config
+APPNAME     := playm_EZX
+
+####### SDK and Toolchains
+TOOLPREFIX  := /opt/toolchains/motoezx
+ARMLIB      := $(TOOLPREFIX)/crosstool/arm-linux-gnu/lib
+
+####### Default Platform
+QTDIR       := $(TOOLPREFIX)/a1200/qt2
+EZXDIR      := $(TOOLPREFIX)/a1200/ezx2
+LINKLIB     := -lezx_mp_playerengine -lqte-mt
+TARGET       = $(APPNAME)
+
+####### Build Tools and Options
+MOC          = $(QTDIR)/bin/moc
+CC           = $(TOOLPREFIX)/crosstool/bin/arm-linux-gnu-gcc
+CXX          = $(TOOLPREFIX)/crosstool/bin/arm-linux-gnu-g++
+STRIP        = $(TOOLPREFIX)/crosstool/bin/arm-linux-gnu-strip
+INCPATH      = -I$(QTDIR)/include -I$(EZXDIR)/include -I$(TOOLPREFIX)/crosstool/arm-linux-gnu/include -I$(TOOLPREFIX)/include
+CFLAGS       = -pipe -Wall -W -g -DDEBUG -DEZX_E6 $(DIRECTIV) $(INCPATH)
+CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -g -DDEBUG -DEZX_E6 $(INCPATH)
+LDLAGS       = -Wl,-rpath-link,$(EZXDIR)/lib -Wl,-rpath-link,$(EZXDIR)/lib/ezx/lib
+LIBS         = -L$(EZXDIR)/lib -L$(EZXDIR)/lib/ezx/lib -L$(ARMLIB) -L$(QTDIR)/lib -L$(TOOLPREFIX)/lib $(LINKLIB)
+
+####### Files
+SOURCES      = playm.cpp
+OBJECTS      = playm.o
+SRCMOC       = playm.moc
+
+all: $(SRCMOC) $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(LDLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+	# $(STRIP) -s $(TARGET)
+
+moc: $(SRCMOC)
+
+tar: $(TARGET)
+	-tar -cvf $(TARGET).tar $(TARGET)
+
+rmobj:
+	-rm -f $(OBJECTS)
+	-rm -f *~ core
+	$(RM) *.o
+	$(RM) *.moc
+
+clean: rmobj
+	$(RM) $(TARGET) *.tar
+
+#--------- moc's -----------------------------
+playm.moc: playm.cpp
+	$(MOC) playm.cpp -o playm.moc
