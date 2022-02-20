@@ -2,17 +2,32 @@
 # Default EZX platform is Motorola MING A1200
 
 ####### Config
-APPNAME     := playm_EZX
+APPNAME     := playm
 
 ####### SDK and Toolchains
 TOOLPREFIX  := /opt/toolchains/motoezx
 ARMLIB      := $(TOOLPREFIX)/crosstool/arm-linux-gnu/lib
 
 ####### Default Platform
+ifeq ($(PLATFORM),)
+PLATFORM     = EZX-E2
+endif
+
+####### Platforms
+ifeq ($(PLATFORM),EZX-E2)
+QTDIR       := $(TOOLPREFIX)/e2/qt
+EZXDIR      := $(TOOLPREFIX)/e2/ezx
+LINKLIB     := -lezx_mp_playerengine -lezxrichedit -lqte-mt
+DIRECTIV    := -DEZX_E2 $(APP_DEFINES)
+TARGET       = $(APPNAME)_E2
+endif
+ifeq ($(PLATFORM),EZX-E6)
 QTDIR       := $(TOOLPREFIX)/a1200/qt2
 EZXDIR      := $(TOOLPREFIX)/a1200/ezx2
 LINKLIB     := -lezx_mp_playerengine -lqte-mt
-TARGET       = $(APPNAME)
+DIRECTIV    := -DEZX_E6 $(APP_DEFINES)
+TARGET       = $(APPNAME)_E6
+endif
 
 ####### Build Tools and Options
 MOC          = $(QTDIR)/bin/moc
