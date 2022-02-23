@@ -5,7 +5,7 @@
 APPNAME     := playm_EMU
 
 ####### SDK and Toolchains
-TOOLPREFIX  := /opt/toolchains/motoemu
+TOOLPREFIX  := /opt/toolchains/motomagx-emulator
 
 ####### Default Platform
 LINKLIB     := -ldrmfwudaclient_no_ui -lezx_mp_playerengine -lqte-mt

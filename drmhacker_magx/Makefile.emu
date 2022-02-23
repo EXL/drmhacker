@@ -2,10 +2,10 @@
 # Default MotoMAGX platform is MotoMAGX Emulator.
 
 ####### Config
-APPNAME     := drmhacker_magx_emu
+APPNAME     := drmhacker_magx_EMU
 
 ####### SDK and Toolchains
-TOOLPREFIX  := /opt/toolchains/motoemu
+TOOLPREFIX  := /opt/toolchains/motomagx-emulator
 
 ####### Default Platform
 LINKLIB     := -ldrmfwudaclient_no_ui -lezxdrmsp -lezxdrmcipher -lezxdrmclibhack -lezx_mp_playerengine -lqte-mt
