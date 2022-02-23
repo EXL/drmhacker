@@ -5,7 +5,7 @@
 APPNAME     := drmhacker_magx_emu
 
 ####### SDK and Toolchains
-TOOLPREFIX  := /opt/toolchains/motomagx/emulator
+TOOLPREFIX  := /opt/toolchains/motoemu
 
 ####### Default Platform
 LINKLIB     := -ldrmfwudaclient_no_ui -lezxdrmsp -lezxdrmcipher -lezxdrmclibhack -lezx_mp_playerengine -lqte-mt
