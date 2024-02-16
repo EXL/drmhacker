@@ -9,6 +9,7 @@ TOOLPREFIX  := /opt/toolchains/motomagx-emulator
 
 ####### Default Platform
 LINKLIB     := -ldrmfwudaclient_no_ui -lezx_mp_playerengine -lqte-mt
+DIRECTIV    := -DEZX_EMU $(APP_DEFINES)
 TARGET       = $(APPNAME)
 
 ####### Build Tools and Options
@@ -17,8 +18,8 @@ CC           = $(TOOLPREFIX)/bin/i686-mot-linux-gnu-gcc
 CXX          = $(TOOLPREFIX)/bin/i686-mot-linux-gnu-g++
 STRIP        = $(TOOLPREFIX)/bin/i686-mot-linux-gnu-strip
 INCPATH      = -I. -I.. -I$(TOOLPREFIX)/include
-CFLAGS       = -pipe -Wall -W -g -DDEBUG $(INCPATH)
-CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -g -DDEBUG $(INCPATH)
+CFLAGS       = -pipe -Wall -W -O2 $(DIRECTIV) $(INCPATH)
+CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -O2 $(DIRECTIV) $(INCPATH)
 LDLAGS       = -Wl,-rpath-link,$(TOOLPREFIX)/lib
 LIBS         = -L$(TOOLPREFIX)/lib $(LINKLIB)
 
@@ -31,7 +32,7 @@ all: $(SRCMOC) $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(LDLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
-	# $(STRIP) -s $(TARGET)
+	$(STRIP) -s $(TARGET)
 
 moc: $(SRCMOC)
 

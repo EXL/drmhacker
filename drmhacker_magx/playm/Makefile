@@ -1,5 +1,5 @@
 # This Makefile was edited by EXL, 16-Feb-2022
-# Default MotoMAGX platform is Motorola ZINE ZN5
+# Default MotoMAGX platform is Motorola ZINE ZN5.
 
 ####### Config
 APPNAME     := playm_ZN5
@@ -12,6 +12,7 @@ ARMLIB      := $(TOOLPREFIX)/arm-linux-gnueabi/lib
 QTDIR       := $(TOOLPREFIX)/lib/qt-zn5
 EZXDIR      := $(TOOLPREFIX)/lib/ezx-zn5
 LINKLIB     := -lezx_mp_playerengine -lqte-mt
+DIRECTIV    := -DEZX_ZN5 $(APP_DEFINES)
 TARGET       = $(APPNAME)
 
 ####### Build Tools and Options
@@ -20,8 +21,8 @@ CC           = $(TOOLPREFIX)/bin/arm-linux-gnueabi-gcc
 CXX          = $(TOOLPREFIX)/bin/arm-linux-gnueabi-g++
 STRIP        = $(TOOLPREFIX)/bin/arm-linux-gnueabi-strip
 INCPATH      = -I. -I.. -I$(QTDIR)/include -I$(EZXDIR)/include -I$(TOOLPREFIX)/arm-linux-gnueabi/include
-CFLAGS       = -pipe -Wall -W -g -DDEBUG $(INCPATH)
-CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -g -DDEBUG $(INCPATH)
+CFLAGS       = -pipe -Wall -W -O2 $(DIRECTIV) $(INCPATH)
+CXXFLAGS     = -pipe -DQWS -fno-exceptions -fno-rtti -Wall -W -O2 $(DIRECTIV) $(INCPATH)
 LDLAGS       = -Wl,-rpath-link,$(EZXDIR)/lib
 LIBS         = -L$(EZXDIR)/lib -L$(ARMLIB) -L$(QTDIR)/lib $(LINKLIB)
 
@@ -34,7 +35,7 @@ all: $(SRCMOC) $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(LDLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
-	# $(STRIP) -s $(TARGET)
+	$(STRIP) -s $(TARGET)
 
 moc: $(SRCMOC)
 

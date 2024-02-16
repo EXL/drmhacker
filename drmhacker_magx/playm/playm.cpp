@@ -9,11 +9,11 @@
 #include <qfileinfo.h>
 #include <qstring.h>
 
-// EZX
+// EZX, MotoMAGX
 #include <ezxsound.h>
 #include <MP_PlayerEngine.h>
 
-#ifdef EZX_E6
+#if defined(EZX_E2) || defined(EZX_E6) || defined(EZX_A1200)
 #define AM_NORMAL_DEV_INTERFACE ZAudioNormalDev
 #define AM_VIRTUAL_DEV_BASE_CLASS ZAudioVirtualDev
 #else
@@ -34,66 +34,67 @@ public:
 		QObject::connect(playerEngine, SIGNAL(playFinished()), this, SLOT(finished()));
 		QObject::connect(
 			playerEngine, SIGNAL(positionChanged(unsigned int, unsigned int)),
-			this, SLOT(info(unsigned int, unsigned int))
+			this, SLOT(position(unsigned int, unsigned int))
 		);
 	}
 	void play(void) {
-		fprintf(stderr, "=> 8. Play file with player/ringtone engine. Is there Segmentation Fault?\n");
+		// Second argument is check correctness of audio device interface.
 		playerEngine->play();
-		fprintf(stderr, "=> 9. What is first bool parameter?\n");
 //		playerEngine->play(false);
 //		playerEngine->play(true);
 	}
 private slots:
 	void finished(void) {
-		fprintf(stderr, "=> 11. Playing finished!\n");
+		fprintf(stderr, "===> Playing finished!\n");
 		deinit();
 	}
-	void info(unsigned int newTime, unsigned int totalLenght) {
+	void position(unsigned int newTime, unsigned int totalLenght) {
 		fprintf(stderr, "====> newTime: %d, totalLenght: %d!\n", newTime, totalLenght);
 		if (newTime > 10000 && !firstSeek) {
-			fprintf(stderr, "=> 10. Can seek? %d, Seek to 95%\n", playerEngine->canSeek());
+			fprintf(
+				stderr, "=====> Can seek: %d, Progress: %d\n",
+				playerEngine->canSeek(), playerEngine->getPlaybackPosition()
+			);
 			playerEngine->pause();
-			playerEngine->setPositionInMS(playerEngine->getPlaybackPosition() + 10000);
+			playerEngine->setPositionInMS(20000); // In millis.
+//			playerEngine->setPosition(80); // In percents.
 			playerEngine->play();
 			firstSeek = true;
 		}
 	}
 private:
 	void init(const QString &aPathToMediaFile) {
-		fprintf(stderr, "=> 1. Initialize audio interface. Why 8000 Hz? Why 1 (mono) channel? Check this later.\n");
+		// EZX and MotoMAGX initialization of audio device interface.
+#if defined(EZX_E2) || defined(EZX_E6) || defined(EZX_A1200)
 		audioOut = new AM_NORMAL_DEV_INTERFACE((SOUNDM_AUDIO_NORMALDEV_TYPE_ENUM_T) NORMAL_DEVICE, 8000, 1, 2);
-
-		fprintf(stderr, "=> 2. Initialize ringtone engine. Is NULL as second parameter correct?\n");
-		playerEngine = MP_CreateRingtoneEngine((AM_VIRTUAL_DEV_BASE_CLASS *) audioOut, NULL);
-		fprintf(stderr, "=> 3. What difference between ringtone engine and player engine?\n");
-//		playerEngine = MP_CreatePlayerEngine((AM_VIRTUAL_DEV_BASE_CLASS *) audioOut, NULL);
+#else
+		audioOut = new AM_NORMAL_DEV_INTERFACE();
+#endif
+		// RingtoneEngine is fast, but no seek functionality there.
+//		playerEngine = MP_CreateRingtoneEngine((AM_VIRTUAL_DEV_BASE_CLASS *) audioOut, NULL);
+		playerEngine = MP_CreatePlayerEngine((AM_VIRTUAL_DEV_BASE_CLASS *) audioOut, NULL);
 
 		QFileInfo audioFileInfo(aPathToMediaFile);
 		QString filePath = QFile::encodeName(audioFileInfo.absFilePath());
-		fprintf(stderr, "=> 4. Get full path to audiofile! Path: '%s'.\n", filePath.data());
+		fprintf(stderr, "===> Path: '%s'.\n", filePath.data());
 
-		fprintf(stderr, "=> 5. Open file with player/ringtone engine.\n");
+		// Second argument is obsolete.
+		// bool open(const TCHAR* filename, bool headonly = false);
 		playerEngine->open(filePath);
-		fprintf(stderr, "=> 6. What is second bool parameter?\n");
 //		playerEngine->open(aPathIn, false);
 //		playerEngine->open(aPathIn, true);
 
-		fprintf(stderr, "=> 7. Set volume to 5!\n");
+		// Set Volume of Media Player.
 		playerEngine->setVolume(5);
 	}
 	void deinit(void) {
-		fprintf(stderr, "=> 12. Close player now?\n");
+		// Close and deinit player.
 		playerEngine->close();
-
-		fprintf(stderr, "=> 13. Delete player/ringtone engine.\n");
 		delete playerEngine;
 		playerEngine = NULL;
 
-		fprintf(stderr, "=> 14. Close audio interface.\n");
+		// Close audio output interface.
 		audioOut->close();
-
-		fprintf(stderr, "=> 15. Delete audio interface.\n");
 		delete audioOut;
 		audioOut = NULL;
 

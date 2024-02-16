@@ -85,17 +85,17 @@ extern "C" {
 
 // Defines
 #ifndef NO_DEBUG
-#define logd(fmt, ...)    fprintf(stderr, fmt, ## __VA_ARGS__)
+#define logd(fmt, ...)    do { fprintf(stderr, fmt, ## __VA_ARGS__); } while(0)
 #else
 #define logd(fmt, ...)    do { } while(0)
 #endif
-#define logi(fmt, ...)    fprintf(stdout, fmt, ## __VA_ARGS__)
-#define loge(fmt, ...)    fprintf(stderr, fmt, ## __VA_ARGS__)
+#define logi(fmt, ...)    do { fprintf(stdout, fmt, ## __VA_ARGS__); } while(0)
+#define loge(fmt, ...)    do { fprintf(stderr, fmt, ## __VA_ARGS__); } while(0)
 
 static int Usage(void) {
 	loge(
 		"Information:\n"
-		"\thttps://forum.motofan.ru/index.php?showtopic=1262\n" // TODO: Fix this link to actual!
+		"\thttps://forum.motofan.ru/index.php?showtopic=1742432\n"
 		"Source code:\n"
 		"\thttps://github.com/EXL/drmhacker\n"
 		"Usage:\n"
