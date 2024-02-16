@@ -9,7 +9,7 @@
  *   MIT
  *
  * History:
- *   11-Feb-2022: ~~~~~
+ *   11-Feb-2022: Added some MP_PlayerEngine class tests.
  *   27-Jan-2022: Added no register mode for DRM SP uncrypto method.
  *   26-Jan-2022: Dropped qDebug() in favor to fprintf() because new MotoMAGX devices cut logs in Qt library.
  *   21-Sep-2021: Added loop for DRM_SP_ValidateRights() function.
