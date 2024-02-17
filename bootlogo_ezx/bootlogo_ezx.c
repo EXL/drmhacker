@@ -36,9 +36,9 @@ static int32_t ErrFile(const char *aFileName, const char *aMode) {
 static uint32_t GetNeedle(FILE *aReadFile, FILE *aWriteFile, uint64_t *aOffset, uint8_t aCanWriteFlag) {
 	const uint64_t lStartPos = ftell(aReadFile) - 1;
 	fseek(aReadFile, lStartPos, SEEK_SET);
-	uint32_t lNeedle;
-	fread(&lNeedle, sizeof(uint32_t), 1, aReadFile);
-	if (aCanWriteFlag && (lNeedle != GIF_ENDING_PATTERN)) {
+	uint32_t lNeedle, res;
+	res = fread(&lNeedle, sizeof(uint32_t), 1, aReadFile);
+	if (aCanWriteFlag && (lNeedle != GIF_ENDING_PATTERN) && (res > 0)) {
 		fseek(aWriteFile, ftell(aWriteFile) - 1, SEEK_SET);
 		fwrite(&lNeedle, sizeof(uint32_t), 1, aWriteFile);
 	}
