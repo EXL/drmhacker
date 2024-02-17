@@ -94,19 +94,24 @@ static int32_t ParseDisplay(display_t *aDisplay, const char *aScreenSize) {
 
 static uint32_t *CreateBitmapFromFile(FILE *aReadFile, const display_t *aDisplay, const int aDepth) {
 	uint32_t *lBitmapRgb888 = malloc(aDisplay->size * sizeof(uint32_t));
+	uint32_t res = 0;
 	for (int32_t y = 0; y < aDisplay->height; ++y)
 		for (int32_t x = 0; x < aDisplay->width; ++x) {
 			switch (aDepth) {
 				default: {
 					uint32_t lPixelRgb666 = 0x000000;
-					fread(&lPixelRgb666, 3, 1, aReadFile); /* RGB666 in RGB888, 3 bytes, 18-bit or 24-bit for color. */
-					lBitmapRgb888[x + y * aDisplay->width] = RGB666_TO_RGB888(lPixelRgb666);
+					res = fread(&lPixelRgb666, 3, 1, aReadFile); /* RGB666 in RGB888, 3 bytes, 18-bit or 24-bit for color. */
+					if (res) {
+						lBitmapRgb888[x + y * aDisplay->width] = RGB666_TO_RGB888(lPixelRgb666);
+					}
 					break;
 				}
 				case 16: {
 					uint32_t lPixelRgb565 = 0x000000;
-					fread(&lPixelRgb565, 2, 1, aReadFile); /* RGB565 in RGB888, 2 bytes, 16-bit for color. */
-					lBitmapRgb888[x + y * aDisplay->width] = RGB565_TO_RGB888(lPixelRgb565);
+					res = fread(&lPixelRgb565, 2, 1, aReadFile); /* RGB565 in RGB888, 2 bytes, 16-bit for color. */
+					if (res) {
+						lBitmapRgb888[x + y * aDisplay->width] = RGB565_TO_RGB888(lPixelRgb565);
+					}
 					break;
 				}
 			}
