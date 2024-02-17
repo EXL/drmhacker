@@ -9,6 +9,7 @@
  *   MIT
  *
  * History:
+ *   18-Feb-2024: Trying to fix decrypting using Media Player.
  *   11-Feb-2022: Added some MP_PlayerEngine class tests.
  *   27-Jan-2022: Added no register mode for DRM SP uncrypto method.
  *   26-Jan-2022: Dropped qDebug() in favor to fprintf() because new MotoMAGX devices cut logs in Qt library.
@@ -23,6 +24,7 @@
  * Flow:
  *   1. DRM_IsDRMFile() => DRM_StartRightsMeter() => DRM_CreateConsumptionFilePath() => DRM_StopRightsMeter()
  *   2. DRM_SP_SetClibDefaultAction() => DRM_SP_Register() => QFile::open() => fopen() => open()
+ *   3. AM_NORMAL_DEV_INTERFACE() => MP_CreateRingtoneEngine() => Copy file from /mnt/drmfs
  *
  * Information:
  *   Before building copy actual phone libraries from /usr/lib and /usr/lib/ezx/lib directories to the MotoMAGX SDK!
@@ -106,7 +108,7 @@ static int Usage(void) {
 		"\t./drmhacker_magx drm sound.mp3.dcf sound.mp3 # Using Standard DRM API decryption mode.\n"
 		"\t./drmhacker_magx drm_sp sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode.\n"
 		"\t./drmhacker_magx drm_sp_reg sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode and register type.\n"
-		"\t./drmhacker_magx player sound.mp3.dcf sound.mp3 # Using Media Player API decryption mode (not tested yet).\n"
+		"\t./drmhacker_magx player sound.mp3.dcf sound.mp3 # Using Media Player API decryption mode (not tested).\n"
 	);
 	return 1;
 }
@@ -154,48 +156,51 @@ static QString FindFileInDirectoryByMask(const QString &aMask) {
 }
 
 static int ModeMediaPlayerApiForDecrypt(const char *aPathIn, const char *aPathOut) {
-	logi("Info: using Media Player API decryption mode.\n");
+	logi("Info: using Media Player API decryption mode, untested.\n");
 
-	loge("1\n");
+	QFileInfo fileinfo(aPathIn);
+	loge("=> Filepath to open: %s\n", QFile::encodeName(fileinfo.absFilePath()).data());
 
-	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE((SOUNDM_AUDIO_NORMALDEV_TYPE_ENUM_T) 2, 8000, 1, 2);
+	// EZX initialization.
+//	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface =
+//		new AM_NORMAL_DEV_INTERFACE((SOUNDM_AUDIO_NORMALDEV_TYPE_ENUM_T) NORMAL_DEVICE, 8000, 1, 2)
+	// MotoMAGX initialization.
+	AM_NORMAL_DEV_INTERFACE *lAmNormalDevInterface = new AM_NORMAL_DEV_INTERFACE();
 
-	QFileInfo f(aPathIn);
-
+	// Use Ringtone Engine instead of Player Engine because it is fast.
+	// Player Engine supports seek etc.
+//	MP_PlayerEngine *lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
 	MP_PlayerEngine *lMP_PlayerEngine = MP_CreateRingtoneEngine(lAmNormalDevInterface, NULL);
 
-	loge("2\n");
-
-//	MP_PlayerEngine *lMP_PlayerEngine = MP_CreatePlayerEngine(lAmNormalDevInterface, NULL);
-
+	logi("=> Open.\n");
 //	lMP_PlayerEngine->open(aPathIn, false);
 //	lMP_PlayerEngine->open(aPathIn, true);
+	lMP_PlayerEngine->open(QFile::encodeName(fileinfo.absFilePath()));
 
-	loge("2: %s\n", QFile::encodeName(f.absFilePath()).data());
-
-	lMP_PlayerEngine->open(QFile::encodeName(f.absFilePath()));
-
-	loge("3\n");
-
-//	TODO: Why there is segmentation fault?
-
-	lMP_PlayerEngine->play();
-
-	loge("4\n");
+	logi("=> Play.\n");
 //	lMP_PlayerEngine->play(false);
 //	lMP_PlayerEngine->play(true);
+	lMP_PlayerEngine->play();
 
-	loge("5\n");
+	logi("=> Pause.\n");
+	lMP_PlayerEngine->pause();
 
+	logi("=> Copy file.\n");
 	CopyFile(FindFileInDirectoryByMask(aPathIn), aPathOut);
 
-	loge("6\n");
+	logi("=> Stop.\n");
+	lMP_PlayerEngine->stop();
 
+	logi("=> Close Ringtone Engine.\n");
 	lMP_PlayerEngine->close();
 	delete lMP_PlayerEngine;
+	lMP_PlayerEngine = NULL;
 
+	logi("=> Close Audio Dev Interface.\n");
 	lAmNormalDevInterface->close();
 	delete lAmNormalDevInterface;
+	lAmNormalDevInterface = NULL;
+
 	return 0;
 }
 
@@ -254,7 +259,7 @@ static int ModeStandardDrmApiForDecrypt(const char *aPathIn, const char *aPathOu
 }
 
 int main(int argc, char *argv[]) {
-	logi("|MotoMAGX OMA DRM Hacker| by EXL, v1.0, 27-Jan-2022\n\n");
+	logi("|MotoMAGX OMA DRM Hack Utility| by EXL, v1.0, 18-Feb-2024\n\n");
 	if (argc < 3 || argc > 4)
 		return Usage();
 	if (argc == 4) {

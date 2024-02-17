@@ -9,16 +9,36 @@ This program can be used to decrypt DRM files on Motorola MotoMAGX phones: Z6, V
 
 // TODO: how to install toolchain/SDK, link
 
-```
+```bash
 cd drmhacker_magx/
 make clean
 make
+
+make -f Makefile.emu clean
+make -f Makefile.emu
 ```
 
-## Example
+## Examples
 
 ```
+Information:
+	https://forum.motofan.ru/index.php?showtopic=1742432
+Source code:
+	https://github.com/EXL/drmhacker
+Usage:
+	drmhacker_magx <method> <in-file-path> <out-file-path>
+Examples:
+	./drmhacker_magx image.gif.dcf image.gif # Using Standard DRM API decryption mode (default).
+	./drmhacker_magx image.drm.gif image.gif # Using Standard DRM API decryption mode (default).
+
+	./drmhacker_magx drm sound.mp3.dcf sound.mp3 # Using Standard DRM API decryption mode.
+	./drmhacker_magx drm_sp sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode.
+	./drmhacker_magx drm_sp_reg sound.mp3.dcf sound.mp3 # Using DRM SP API decryption mode and register type.
+	./drmhacker_magx player sound.mp3.dcf sound.mp3 # Using Media Player API decryption mode (not tested).
+```
+
+```bash
 cd /mmc/mmca1/utils/
-./drmhacker_magx /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
-./drmhacker_magx /usr/data_resource/pictures/Picture.gif.dcf Picture.gif
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Picture.gif.dcf Picture.gif
 ```
