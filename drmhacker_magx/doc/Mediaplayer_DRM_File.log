@@ -1,0 +1,9 @@
+utility/MediaPlayerEngine.cpp, open (888): cfg file /ezxlocal/mpe.cfg not exsit
+utility/MediaPlayerEngine.cpp, open (912): In MediaPlayerEngine::open(/mnt/drmfs//usr/data_resource/sound/ringtones/rt_air.mp3.dcf.mp3?cid=cid:1223386402393377606464306#depi1)
+utility/MediaPlayerEngine.cpp, open (1019): OMA case file name
+utility/MediaPlayerEngine.cpp, InitMPEngine (647): After loading MPSDK library, type 1
+utility/MediaPlayerEngine.cpp, InitMPEngine (651): dlopen metadata information library failed (null)
+utility/MediaPlayerEngine.cpp, InitMPEngine (702): Created MPSDK instance
+utility/MediaPlayerEngine.cpp, InitMPEngine (726): ProxyEnable is flase, will not using proxy1
+utility/MediaPlayerEngine.cpp, open (1137):  CheckAudioDevice = 0
+

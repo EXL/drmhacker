@@ -1,0 +1,637 @@
+=====e5568c, enter media player application
+------ ap_pidChannel = 0x6ac58
+=====e5568c, enter mediaplayer, fileName=/mmc/mmca1/Audio/VK.mp3
+enter MP_MainWindow::MP_MainWindow, passedFile=/mmc/mmca1/Audio/VK.mp3
+handle passed file
+exit MP_MainWindow::MP_MainWindow
+======e5568c, after create main window
+=====e5568c, run application
+enter MP_MainWindow::onPassFile, fileName=/mmc/mmca1/Audio/VK.mp3
+======e5568c, enter MP_MainWindow::setMediaFile
+enter MP_MainWindow::initCommonPlayer
+enter MP_CreateCommonPlayer
+MP_PlayerImpl::MP_PlayerImpl, before create screen
+enter MP_MainScreen::MP_MainScreen
+enter MP_AiaControl::MP_AiaControl
+exit MP_AiaControl::MP_AiaControl
+set appinfoarea
+SoftButton No. 0 is hidden, or it is empty!!!SoftButton No. 1 is hidden, or it is empty!!!SoftButton No. 1 is hidden, or it is empty!!!SoftButton No. 0 is hidden, or it is empty!!!SoftButton No. 0 is hidden, or it is empty!!!SoftButton No. 1 is hidden, or it is empty!!!enter MP_MediaController::MP_MediaController
+enter MP_MediaController::updatePreviousIcon, m_hasPrevious=0
+exit MP_MediaController::updatePreviousIcon
+enter MP_MediaController::updateNextIcon, m_hasNext=0
+exit MP_MediaController::updateNextIcon
+enter MP_MediaController::updateLabel, infoA=(null), infoB=(null)
+exit MP_MediaController::updateLabel
+exit MP_MediaController::MP_MediaController
+install event filter by bhf384
+exit MP_MainScreen::MP_MainScreen
+MP_PlayerImpl::MP_PlayerImpl, before create content manager
+enter MP_ContentManager::MP_ContentManager
+enter MP_ContentManager::setState, viewType=0
+clean slide show timer!
+enter MP_MainScreen::setFullSize, isFull=0
+exit MP_ContentManager::setState
+exit MP_ContentManager::MP_ContentManager
+MP_PlayerImpl::MP_PlayerImpl, before show mainscreen
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+SoftButton No. 0 is hidden, or it is empty!!!SoftButton No. 1 is hidden, or it is empty!!!SoftButton No. 0 is hidden, or it is empty!!!SoftButton No. 1 is hidden, or it is empty!!!MP_MainScreen::eventFilter by bhf384
+QT Show: 1129 setAltitude and requestFocus, winId:2634, fget:1, alt:0, fixed:1, order:1
+
+MP_PlayerImpl::MP_PlayerImpl, after show!
+exit MP_PlayerImpl::MP_PlayerImpl
+exit MP_CreateCommonPlayer
+enter MP_AvPlayer::MP_AvPlayer
+exit MP_AvPlayer::releaseArtwork
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (526): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxRTSPKbps = 512
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (528): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxAudKbps = 900
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (530): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxVidKbps = 1280
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (532): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxVidWidth = 640
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (534): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxVidHeight = 640
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (536): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxVidFPS = 60
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (538): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxVidFPSMp4 = 60
+utility/MediaPlayerEngine.cpp, MediaPlayerEngine (540): In MediaPlayerEngine::InitMPEngine():m_Flex_iMaxAudSampleRate = 48000
+exit MP_AvPlayer::MP_AvPlayer
+MP_AvPlayer::addListenser, num of Listener is 0=========send media player start message!!
+create window client to handle menu items
+MP_AvPlayer::addListenser, num of Listener is 1SoftButton No. 0 is hidden, or it is empty!!!SoftButton No. 1 is hidden, or it is empty!!!GKR::Debug MP_WC updateRightKey - m_StartByToggle= 0
+enter MP_WindowClient::updateRightKey, m_downloading=0
+SoftButton No. 0 is hidden, or it is empty!!!exit MP_WindowClient::updateRightKey
+create bt client!
+MP_AvPlayer::addListenser, num of Listener is 2DNI002 NOT setMorphMode: m_bEnableToggle != true
+GKR::Debug MP_WC updateRightKey - m_StartByToggle= 1
+enter MP_WindowClient::updateRightKey, m_downloading=0
+exit MP_WindowClient::updateRightKey
+exit MP_MainWindow::initCommonPlayer
+enter MP_PlayerImpl::setShuffleRepeat
+enter MP_AiaControl::setShuffleRepeat, shuffle=0, repeat=0
+exit MP_AiaControl::setShuffleRepeat
+after remove info
+before set info
+exit MP_AiaControl::updateAIA
+enter MP_MediaController::updateListInfo
+exit MP_MediaController::updateListInfo
+exit MP_PlayerImpl::setShuffleRepeat
+enter MP_PlayerImpl::setMediaList
+enter MP_AvPlayer::close()
+in CLOSED state!
+enter MP_ContentManager::updateListInfo, current=/mmc/mmca1/Audio/VK.mp3
+MP_ContentManager::openFile, fileName=/mmc/mmca1/Audio/VK.mp3
+fileType = 1
+enter MP_ContentManager::handleMediaTypeChanged, currentType=0, newType=1
+showUI
+enter MP_ContentManager::createControl
+enter MP_ContentManager::createAvControl
+enter MP_ContentManager::isVideoMedia, filename:/mmc/mmca1/Audio/VK.mp3, mediutype:0.
+local medium
+{1} wmdrmapi.c:692      Not a wmdrm file from extension!
+{1} wmdrmapi.c:693      [DRM_E_FAIL] error, dr=0x80004005
+none DRM file
+none DRM audio
+enter MP_MainScreen::showViewer
+enter MP_MainScreen::hideViewer
+exit MP_MainScreen::hideViewer
+enter MP_MainScreen::createWidget, type=1
+enter MP_AudioWidget::MP_AudioWidget
+m_isRightAligned = 0
+enter MP_AudioWidget::createAudioWidget
+new detail view, m_parent=461032
+enter MP_AudioWidget::adjustDetailItemPosition
+set background pixmap
+exit MP_AudioWidget::adjustDetailItemPosition
+create albumArt
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+exit MP_AudioWidget::createAudioWidget
+exit MP_AudioWidget::MP_AudioWidget
+enter MP_MainScreen::getContentWidgetRect
+exit MP_MainScreen::getContentWidgetRect, x=0, y=31, w=240, h=178
+enter MP_AudioWidget::updateNormalWidget
+enter MP_AudioWidget::updateContent, isFullSize=0
+enter MP_AudioWidget::updateAlbumArt
+hide album art
+exit MP_AudioWidget::updateContent
+exit MP_AudioWidget::updateNormalWidget
+enter MP_AudioWidget::updateNormalWidget
+enter MP_AudioWidget::updateContent, isFullSize=0
+enter MP_AudioWidget::updateAlbumArt
+hide album art
+exit MP_AudioWidget::updateContent
+exit MP_AudioWidget::updateNormalWidget
+exit MP_MainScreen::createWidget
+enter MP_AudioWidget::show
+enter MP_MainScreen::updateLayout, m_contentType=1
+enter MP_MainScreen::setColumnBVisible, isVisible=1
+exit MP_MainScreen::setColumnBVisible
+enter MP_MainScreen::setSwitchScreenIcon
+ m_isFullEnabled-> [1], isEnabled-> [0]
+enter MP_MediaController::setIconVisible, key=4, isVisible=0
+exit MP_MediaController::setIconVisible
+leave MP_MainScreen::setSwitchScreenIcon
+exit MP_MainScreen::updateLayout
+exit MP_MainScreen::showViewer
+Enter MP_AvControl::MP_AvControl constructor
+enter MP_AvControl::updateAV, m_isVideo=0
+utility/MediaPlayerEngine.cpp, setVideoDevice (1824): MediaPlayerEngine::setVideoDevice() 0x0
+exit MP_AvControl::updateAV
+MP_AvControl::MP_AvControl, add listener to avplayer
+MP_AvPlayer::addListenser, num of Listener is 3MP_ReadSetting::getVolume return m_currentVolume=3
+enter MP_VolumeControl::updateEngineVolume, volume=3
+utility/MediaPlayerEngine.cpp, setMute (1789): MediaPlayerEngine::setMute() 0
+utility/MediaPlayerEngine.cpp, setMute (1789): MediaPlayerEngine::setMute() 0
+utility/MediaPlayerEngine.cpp, setVolume (1728): Entering MediaPlayerEngine::setVolume(3)
+exit MP_VolumeControl::updateEngineVolume
+exit MP_ContentManager::createAvControl
+exit MP_ContentManager::createControl
+content type = 1
+enter MP_MainWindow::slotContentTypeChanged type = 1
+enter MP_MainWindow::updateIdleClient isDoFree=0 contentType=1 MediumType=0
+should create client
+do create
+MP_AvPlayer::addListenser, num of Listener is 4exit MP_MainWindow::updateIdleClient
+known type from signal by bhf384
+exit MP_MainWindow::slotContentTypeChanged by bhf384
+exit MP_ContentManager::handleMediaTypeChanged
+enter MP_ContentManager::checkDisplayAIA
+isDisplay = 1
+enter MP_MainScreen::setAiaVisible, isVisible=1
+enter MP_MainScreen::getContentWidgetRect
+exit MP_MainScreen::getContentWidgetRect, x=0, y=57, w=240, h=152
+enter MP_AudioWidget::updateNormalWidget
+enter MP_AudioWidget::updateContent, isFullSize=0
+enter MP_AudioWidget::updateAlbumArt
+hide album art
+exit MP_AudioWidget::updateContent
+exit MP_AudioWidget::updateNormalWidget
+exit MP_MainScreen::setAiaVisible
+exit MP_ContentManager::checkDisplayAIA
+MP_ContentManager::openFile, before open
+MP_AvControl::open /mmc/mmca1/Audio/VK.mp3
+enter MP_AvPlayer::open
+exit MP_AvPlayer::releaseArtwork
+enter MP_AvPlayer::preOpen
+mediumType=0
+enter MP_DrmUtility::checkDrm, fullName=/mmc/mmca1/Audio/VK.mp3, isPD=0
+Exit MP_DrmUtility::checkDrm, true
+exit MP_AvPlayer::preOpen, result=1
+MP_AvPlayer::open urlName=/mmc/mmca1/Audio/VK.mp3
+MP_AvPlayer::open, /mmc/mmca1/Audio/VK.mp3 is NOT Drm File
+utility/MediaPlayerEngine.cpp, open (882): cfg file /ezxlocal/mpe.cfg not exsit
+utility/MediaPlayerEngine.cpp, open (906): In MediaPlayerEngine::open(/mmc/mmca1/Audio/VK.mp3)
+utility/MediaPlayerEngine.cpp, InitMPEngine (641): After loading MPSDK library, type 0
+1129    MPHX_Player constructor....
+utility/MediaPlayerEngine.cpp, InitMPEngine (696): Created MPSDK instance
+utility/MediaPlayerEngine.cpp, InitMPEngine (720): ProxyEnable is flase, will not using proxy1
+1129    MPHX_Player::EnableAudio(), 1
+utility/MediaPlayerEngine.cpp, open (1117):  CheckAudioDevice = 0
+utility/MediaPlayerEngine.cpp, open (1120): call audio management pause
+1129    MPHX_Player::OpenURL(pURL), url file:///mmc/mmca1/Audio/VK.mp3
+1129    pURL: 0xBEFFDF10,file:///mmc/mmca1/Audio/VK.mp3, Last Dot position: 0xBEFFDF2A-->26(Decimal)
+1129    pURL:file:///mmc/mmca1/Audio/VK.mp3
+1129    pEncodedURL:file:///mmc/mmca1/Audio/VK.mp3
+e7600c: filename for fopen() is: /mmc/mmca1/Audio/VK.mp3
+e7600c: filename for fopen() is: /mmc/mmca1/Audio/VK.mp3
+m_ulSize = StatBuffer.st_size; = 96029
+e7600c: filename for fopen() is: /mmc/mmca1/Audio/VK.mp3
+e7600c: filename for fopen() is: /mmc/mmca1/Audio/VK.mp3
+utility/MediaPlayerEngine.cpp, saveContent (3554): Filename is /mmc/mmca1/Audio/VK.mp3
+utility/MediaPlayerEngine.cpp, saveContent (3569): File extension is .mp3
+exit MP_AvPlayer::open(), result = true
+MP_AvControl::open, m_isVideo = 0
+enter MP_AvPlayer::setAvType, is video=0
+exit MP_AvPlayer::setAvType
+Enter MP_AvPlayer::updateAudioInfo()
+enter MP_AvPlayer::updateClipInfo
+exit MP_AvPlayer::releaseArtwork
+before getStaticInfo
+utility/MediaPlayerEngine.cpp, getClipInfo (2337):
+
+MediaPlayerEngine::getClipInfo(), dump clip info:
+
+utility/MediaPlayerEngine.cpp, getClipInfo (2339): Has Audio 0, frequency 0, channels 0, audioBitrate 0
+utility/MediaPlayerEngine.cpp, getClipInfo (2341): Had Video 0, width 0, height 0, fps 0
+utility/MediaPlayerEngine.cpp, getClipInfo (2342): Total Size 0, Total Time 0, Total Bitrate 0
+static info retrieved!
+audio
+====e5568c=====before getMetaInfoQuickly!
+enter MP_AvPlayer::setCurrentType, type=1
+exit MP_AvPlayer::setCurrentType
+enter MP_AvPlayer::notifyMetaInfo, title=
+utility/MediaPlayerEngine.cpp, canSeek (1937): MediaPlayerEngine::canSeek()
+1129    MPHX_Player::IsLive()
+MP_AvPlayer::notifyMetaInfo, after get canSeek value.
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=0, canSeek=1
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=1, canSeek=1
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=2, canSeek=1
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=3, canSeek=1
+enter MP_MainScreen::updateMetaInfo
+enter MP_MediaController::updatePreviousIcon, m_hasPrevious=0
+exit MP_MediaController::updatePreviousIcon
+enter MP_MediaController::updateNextIcon, m_hasNext=0
+exit MP_MediaController::updateNextIcon
+enter MP_AudioWidget::updateMetaInfo
+update title/artist/album
+enter MP_AudioWidget::setDetailItem, content=
+check empty
+empty
+exit MP_AudioWidget::setDetailItem
+enter MP_AudioWidget::setDetailItem, content=
+check empty
+empty
+exit MP_AudioWidget::setDetailItem
+enter MP_AudioWidget::setDetailItem, content=
+check empty
+empty
+exit MP_AudioWidget::setDetailItem
+exit MP_AudioWidget::updateMetaInfo
+update art work from metadata
+enter MP_AudioWidget::setAlbumArt by raw data
+enter MP_AudioWidget::cleanAlbumPixmaps
+leave MP_AudioWidget::cleanAlbumPixmaps
+enter MP_AudioWidget::updateAlbumArt
+hide album art
+exit MP_AudioWidget::setAlbumArt by raw data
+set switch screen icon-> [0]
+enter MP_MainScreen::setSwitchScreenIcon
+ m_isFullEnabled-> [1], isEnabled-> [0]
+enter MP_MediaController::setIconVisible, key=4, isVisible=0
+exit MP_MediaController::setIconVisible
+leave MP_MainScreen::setSwitchScreenIcon
+exit MP_MainScreen::updateMetaInfo
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=4, canSeek=1
+title - , artist - , album - , canSeek - trueexit MP_AvPlayer::notifyMetaInfo
+exit MP_AvPlayer::updateClipInfo
+Exit MP_AvPlayer::updateAudioInfo()
+MP_AvControl::open, m_isVideo = 0 after update ClipInfo
+MP_AvControl::checkAutoPlay, autoplay=0, isPlaying=0
+exit MP_ContentManager::updateListInfo
+enter MP_MainScreen::updateFileInfo
+
+         <<<<<<< e13771 >>>>>>>>>> enter getLocalPreloadString ::fileName ===== /mmc/mmca1/Audio/VK.mp3
+
+         <<<<<<< e13771 >>>>>>>>>>  retFileName ===== /mmc/mmca1/Audio/VK.mp3
+
+         <<<<<<< e13771 >>>>>>>>>> bTranslateOK ==== false -1 !=  retFileName.findRev('/')
+
+         <<<<<<< e13771 >>>>>>>>>> leave getLocalPreloadString
+        cleanName = VK.mp3
+set aia
+after remove info
+before set info
+exit MP_AiaControl::updateAIA
+exit MP_MainScreen::updateFileInfo
+enter MP_MediaController::updateListInfo
+exit MP_MediaController::updateListInfo
+enter MP_WindowClient::closeDlmSession
+exit MP_WindowClient::closeDlmSession
+exit MP_PlayerImpl::setMediaList
+enter MP_PlayerImpl::play, bSlideShow=0
+play!
+MP_Common::isShowingErrorMessage, isShowingError=0
+enter MP_AvPlayer::play()
+enter MP_AvPlayer::checkOpenForDrm()
+enter MP_DrmUtility::playRighter
+exit MP_DrmUtility::playRighter, open=0
+MP_OPEN_RESUME
+utility/MediaPlayerEngine.cpp, play (1472): MediaPlayerEngine::play(0)
+utility/MediaPlayerEngine.cpp, play (1508): Janus setoutputleve: 0
+utility/MediaPlayerEngine.cpp, play (1540): value of m_iFileProperty 0
+utility/MediaPlayerEngine.cpp, play (1555): call audio management resume 0
+1134    MPHX_Player::OnBegin()
+1129    MPHX_Player::Play() m_bPDL = 0, m_pRMAPlayer 0xc5450,m_PauseType = 1,m_bPlayCalled = 0
+1129    MPHX_Player::Play()
+exit MP_AvPlayer::play(), result=true
+MP_AvPlayer::setState, state=1
+enter MP_AvPlayer::notifyStateInfo, m_currentState=1
+enter MP_MediafinderClient::updateState, mpState=1
+exit MP_MediafinderClient::updateState
+enter MP_MediaController::updateState, mpState=1
+enter MP_MediaController::setPlayerIcons
+enter MP_MediaController::updatePreviousIcon, m_hasPrevious=0
+exit MP_MediaController::updatePreviousIcon
+enter MP_MediaController::updateNextIcon, m_hasNext=0
+exit MP_MediaController::updateNextIcon
+exit MP_MediaController::setPlayerIcons
+can pause = 1
+exit MP_MediaController::updateState
+state is 1exit MP_AvPlayer::notifyStateInfo
+exit MP_PlayerImpl::play
+======e5568c, exit MP_MainWindow::setMediaFile
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+utility/MediaPlayerEngine.cpp, event (3052): MP_PLAY_STATES_CHANGED_EVENT, state = 0
+enter MP_AvPlayer::onPlayStateChanged, state=0
+ m_isSeeking=0
+MP_AvPlayer::onPlayStateChanged, current state is 1
+exit MP_AvPlayer::onPlayStateChanged
+MP_AvPlayer::onPositionChanged, newTime=0, totalLength=2400
+m_downloadedLength = 0 newTime = 0
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=0, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=0, totalTime=2400
+enterupdate length
+entercan pause
+exit MP_MediaController::updateTime
+elapsed time is 0, total time is 2400enterenterexit MP_AvPlayer::notifyTimeInfo
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::eventFilter by bhf384
+MP_MainScreen::focusInEvent
+(e7761c) msg - /MP/Idle/Info/MetaInfo(e7761c) msg - /MP/Idle/Info/State(e7761c) msg - /MP/Idle/Info/ElapsedTime(e7761c) msg - /MP/Idle/Info/TotalTime(e7761c) msg - /MP/Idle/Req/Updatestate is 1elapsed time is 0, total time is 2400enterenterutility/MediaPlayerEngine.cpp, canSeek (1937): MediaPlayerEngine::canSeek()
+1129    MPHX_Player::IsLive()
+title - , artist - , album - , canSeek - true(e7761c) msg - /MP/Idle/Info/State(e7761c) msg - /MP/Idle/Info/ElapsedTime(e7761c) msg - /MP/Idle/Info/TotalTime(e7761c) msg - /MP/Idle/Info/MetaInfo1134  MPHX_Player::OnPresentationOpened()
+1134    MPHX_Player::OnpresentionOpened Callback start
+utility/MediaPlayerEngine.cpp, OnBuffering (3369): MediaPlayerEngine::OnBuffering() flag 0l percent 100s
+utility/MediaPlayerEngine.cpp, event (3052): MP_PLAY_STATES_CHANGED_EVENT, state = 7
+enter MP_AvPlayer::onPlayStateChanged, state=7
+ m_isSeeking=0
+MP_AvPlayer::onPlayStateChanged, current state is 1
+exit MP_AvPlayer::onPlayStateChanged
+enter MP_AvPlayer::notifyBufferInfo, nPercent=100
+enter MP_MediaController::updateLabel, infoA=(null), infoB=(null)
+exit MP_MediaController::updateLabel
+exit MP_AvPlayer::notifyBufferInfo
+1134    nSourceCount = 1
+1134    Integer Properties:
+
+1134    StreamNumber 0
+1134    AvgBitRate 320000
+1134    SampleRate 44100
+1134    SamplesPerSecond 44100
+1134    NumChannels 2
+1134    Channels 2
+1134    Preroll 130
+1134    Duration 2400
+1134    MaxPacketSize 1024
+1134    AvgPacketSize 1044
+1134    StartTime 0
+1134    TrackEndTime 2400
+1134    IsAudioStream 1
+1134    PostDecodeDelay 1000
+1134    String Properties:
+
+1134    CString Properties:
+
+1134    MimeType audio/MPEG-ELEMENTARY
+1134    ASMRuleBook AverageBandwidth=320000, AverageBandwidthStd=0, Priority=9;
+1134    MPHX_Player::FillClipInfo() hasAudio 1
+1134    Fill in ClipInfo, ret 0
+utility/MediaPlayerEngine.cpp, OnPresentationOpened (3134): Entering!!!
+utility/MediaPlayerEngine.cpp, OnPresentationOpened (3135): OnBeginClip()
+utility/MediaPlayerEngine.cpp, getClipInfo (2337):
+
+MediaPlayerEngine::getClipInfo(), dump clip info:
+
+utility/MediaPlayerEngine.cpp, getClipInfo (2339): Has Audio 1, frequency 44100, channels 2, audioBitrate 320000
+utility/MediaPlayerEngine.cpp, getClipInfo (2341): Had Video 0, width 0, height 0, fps 0
+utility/MediaPlayerEngine.cpp, getClipInfo (2342): Total Size 0, Total Time 2400, Total Bitrate 320000
+utility/MediaPlayerEngine.cpp, disableTurboMode (4048): disable Turbo Mode
+utility/MediaPlayerEngine.cpp, checkSequenceAudioParam (2757): MediaPlayerEngine::checkSequenceAudioParam():sinfo.frequency = 44100
+utility/MediaPlayerEngine.cpp, checkSequenceAudioParam (2758): MediaPlayerEngine::checkSequenceAudioParam():m_Flex_iMaxAudSampleRate = 48000
+utility/MediaPlayerEngine.cpp, checkSequenceAudioParam (2768): MediaPlayerEngine::checkSequenceAudioParam():sinfo.totalBitrate/MP_KBPS = 312
+utility/MediaPlayerEngine.cpp, checkSequenceAudioParam (2769): MediaPlayerEngine::checkSequenceAudioParam():m_Flex_iMaxRTSPKbps = 512
+utility/MediaPlayerEngine.cpp, checkSequenceAudioParam (2808): MediaPlayerEngine::checkSequenceAudioParam():sinfo.audioBitrate/MP_KBPS = 312
+utility/MediaPlayerEngine.cpp, checkSequenceAudioParam (2809): MediaPlayerEngine::checkSequenceAudioParam():m_Flex_iMaxAudKbps = 900
+utility/MediaPlayerEngine.cpp, OnPresentationOpened (3185): send CLIP_BEGIN_SUCCESSFUL event
+MP_AvPlayer::onClipBeginSuccessful, m_isStopped = 0
+enter MP_AvPlayer::updateClipInfo
+exit MP_AvPlayer::releaseArtwork
+before getStaticInfo
+utility/MediaPlayerEngine.cpp, getClipInfo (2337):
+
+MediaPlayerEngine::getClipInfo(), dump clip info:
+
+utility/MediaPlayerEngine.cpp, getClipInfo (2339): Has Audio 1, frequency 44100, channels 2, audioBitrate 320000
+utility/MediaPlayerEngine.cpp, getClipInfo (2341): Had Video 0, width 0, height 0, fps 0
+utility/MediaPlayerEngine.cpp, getClipInfo (2342): Total Size 0, Total Time 2400, Total Bitrate 320000
+static info retrieved!
+audio
+====e5568c=====before getMetaInfoQuickly!
+enter MP_AvPlayer::setCurrentType, type=1
+exit MP_AvPlayer::setCurrentType
+enter MP_AvPlayer::notifyMetaInfo, title=
+utility/MediaPlayerEngine.cpp, canSeek (1937): MediaPlayerEngine::canSeek()
+1129    MPHX_Player::IsLive()
+MP_AvPlayer::notifyMetaInfo, after get canSeek value.
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=0, canSeek=1
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=1, canSeek=1
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=2, canSeek=1
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=3, canSeek=1
+enter MP_MainScreen::updateMetaInfo
+enter MP_MediaController::updatePreviousIcon, m_hasPrevious=0
+exit MP_MediaController::updatePreviousIcon
+enter MP_MediaController::updateNextIcon, m_hasNext=0
+exit MP_MediaController::updateNextIcon
+enter MP_AudioWidget::updateMetaInfo
+update title/artist/album
+enter MP_AudioWidget::setDetailItem, content=
+check empty
+empty
+exit MP_AudioWidget::setDetailItem
+enter MP_AudioWidget::setDetailItem, content=
+check empty
+empty
+exit MP_AudioWidget::setDetailItem
+enter MP_AudioWidget::setDetailItem, content=
+check empty
+empty
+exit MP_AudioWidget::setDetailItem
+exit MP_AudioWidget::updateMetaInfo
+update art work from metadata
+enter MP_AudioWidget::setAlbumArt by raw data
+enter MP_AudioWidget::cleanAlbumPixmaps
+leave MP_AudioWidget::cleanAlbumPixmaps
+enter MP_AudioWidget::updateAlbumArt
+hide album art
+exit MP_AudioWidget::setAlbumArt by raw data
+set switch screen icon-> [0]
+enter MP_MainScreen::setSwitchScreenIcon
+ m_isFullEnabled-> [1], isEnabled-> [0]
+enter MP_MediaController::setIconVisible, key=4, isVisible=0
+exit MP_MediaController::setIconVisible
+leave MP_MainScreen::setSwitchScreenIcon
+exit MP_MainScreen::updateMetaInfo
+MP_AvPlayer::notifyMetaInfo() loop of m_listener to update MetaInfo, loop=4, canSeek=1
+title - , artist - , album - , canSeek - trueexit MP_AvPlayer::notifyMetaInfo
+exit MP_AvPlayer::updateClipInfo
+(e7761c) msg - /MP/Idle/Info/MetaInfoutility/MediaPlayerEngine.cpp, enableTurboMode (4066): enable Turbo Mode
+utility/MediaPlayerEngine.cpp, ChangeState (3489): call audio management resume
+utility/MediaPlayerEngine.cpp, OnPosLength (3305): Entering PLAYING state
+utility/MediaPlayerEngine.cpp, event (3052): MP_PLAY_STATES_CHANGED_EVENT, state = 2
+enter MP_AvPlayer::onPlayStateChanged, state=2
+ m_isSeeking=0
+MP_AvPlayer::onPlayStateChanged, current state is 1
+MP_AvPlayer::setState, state=1
+exit MP_AvPlayer::onPlayStateChanged
+MP_AvPlayer::onPositionChanged, newTime=50, totalLength=2400
+m_downloadedLength = 0 newTime = 50
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=50, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=50, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 50, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=249, totalLength=2400
+m_downloadedLength = 50 newTime = 249
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=249, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=249, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 249, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=449, totalLength=2400
+m_downloadedLength = 249 newTime = 449
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=449, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=449, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 449, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=649, totalLength=2400
+m_downloadedLength = 449 newTime = 649
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=649, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=649, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 649, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=849, totalLength=2400
+m_downloadedLength = 649 newTime = 849
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=849, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=849, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 849, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=1048, totalLength=2400
+m_downloadedLength = 849 newTime = 1048
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=1048, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=1048, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 1048, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=1248, totalLength=2400
+m_downloadedLength = 1048 newTime = 1248
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=1248, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=1248, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 1248, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=1447, totalLength=2400
+m_downloadedLength = 1248 newTime = 1447
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=1447, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=1447, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 1447, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=1647, totalLength=2400
+m_downloadedLength = 1447 newTime = 1647
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=1647, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=1647, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 1647, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=1846, totalLength=2400
+m_downloadedLength = 1647 newTime = 1846
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=1846, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=1846, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 1846, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=2046, totalLength=2400
+m_downloadedLength = 1846 newTime = 2046
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=2046, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=2046, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 2046, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTimeMP_AvPlayer::onPositionChanged, newTime=2245, totalLength=2400
+m_downloadedLength = 2046 newTime = 2245
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=2245, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=2245, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 2245, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTime1134    MPHX_Player::OnStop()
+utility/MediaPlayerEngine.cpp, disableTurboMode (4048): disable Turbo Mode
+1134    MPHX_Player::OnPresentationClosed()
+utility/MediaPlayerEngine.cpp, event (3052): MP_PLAY_STATES_CHANGED_EVENT, state = 1
+enter MP_AvPlayer::onPlayStateChanged, state=1
+ m_isSeeking=0
+MP_AvPlayer::onPlayStateChanged, current state is 1
+MP_AvPlayer::onPlayStateChanged MPSTATE_STOPPED:
+exit MP_AvPlayer::onPlayStateChanged
+MP_AvPlayer::onPositionChanged, newTime=2400, totalLength=2400
+m_downloadedLength = 2245 newTime = 2400
+new duration not update record newtime as m_downloadedLength
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=2400, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=2400, totalTime=2400
+enterexit MP_MediaController::updateTime
+elapsed time is 2400, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+MP_AvPlayer::onPositionChanged, newTime=0, totalLength=2400
+m_downloadedLength = 2400 newTime = 0
+enter MP_AvPlayer::notifyTimeInfo, m_currentPosition=0, m_totalLength=2400
+enter MP_MediaController::updateTime, elapsedTime=0, totalTime=2400
+enterexit MP_MediaController::updateTime
+utility/MediaPlayerEngine.cpp, OnPresentationClosed (3238): MediaPlayerEngine::OnEndClip(), stop running HelixEngine
+elapsed time is 0, total time is 2400enterexit MP_AvPlayer::notifyTimeInfo
+enter MP_AvPlayer::onPlayFinished
+MP_AvPlayer::onPlayFinished setStopped
+enter MP_AvPlayer::setStopped, m_isStopped=0
+enter MP_DrmUtility::stopRighter
+exit MP_DrmUtility::stopRighter
+MP_AvPlayer::setState, state=5
+enter MP_AvPlayer::notifyStateInfo, m_currentState=5
+enter MP_MediafinderClient::updateState, mpState=5
+exit MP_MediafinderClient::updateState
+enter MP_MediaController::updateState, mpState=5
+enter MP_MediaController::updatePreviousIcon, m_hasPrevious=0
+exit MP_MediaController::updatePreviousIcon
+enter MP_MediaController::updateNextIcon, m_hasNext=0
+exit MP_MediaController::updateNextIcon
+exit MP_MediaController::updateState
+state is 5treat these state as paused!
+exit MP_AvPlayer::notifyStateInfo
+exit MP_AvPlayer::setStopped
+enter MP_ContentManager::afterPlayFinished, isAudio=1, playSuccessful=1
+post next event!!!
+end MP_AvPlayer::onPlayFinished
+MP_ContentManager::eventFilter, e->type=2001
+MP_ContentManager::customEvent, play next!
+enter MP_AvControl::currentFinished
+MP_Common::isShowingErrorMessage, isShowingError=0
+play finished.
+enter MP_AvPlayer::setStopped, m_isStopped=1
+exit MP_AvPlayer::setStopped
+MP_AvPlayer::setState, state=7
+enter MP_AvPlayer::notifyStateInfo, m_currentState=7
+enter MP_MediafinderClient::updateState, mpState=7
+exit MP_MediafinderClient::updateState
+enter MP_WindowClient::closeDlmSession
+exit MP_WindowClient::closeDlmSession
+enter MP_MainWindow::onDownloadComplate
+enter MP_MainWindow::updateIdleClient isDoFree=0 contentType=1 MediumType=0
+should create client
+exit MP_MainWindow::updateIdleClient
+exit MP_MainWindow::onDownloadComplate
+enter MP_MediaController::updateState, mpState=7
+exit MP_MediaController::updateState
+state is 7treat these state as paused!
+exit MP_AvPlayer::notifyStateInfo
+(e7761c) msg - /MP/Idle/Info/ElapsedTime(e7761c) msg - /MP/Idle/Info/ElapsedTime(e7761c) msg - /MP/Idle/Info/State(e7761c) msg - /MP/Idle/Info/StateZApplication::slotSystemMessage msg=LCDOn data=(null)
+<<<<<<<<<<<<<<<< e5568c>>>>>>>>>>>> slotSystemMessage == LCDOn
+        MP_MainWindow::slotSystemMessage-----LCDOn----
+enter MP_PlayerImpl::setLCDState
+Entering MP_MainScreen::setLCDState()===isLCDOn=1=
+ZApplication::slotSystemMessage msg=DPL_BKLGT_DIMMED data=(null)
+<<<<<<<<<<<<<<<< e5568c>>>>>>>>>>>> slotSystemMessage == DPL_BKLGT_DIMMED
+        ZApplication::slotSystemMessage msg=LCDOn data=(null)
+<<<<<<<<<<<<<<<< e5568c>>>>>>>>>>>> slotSystemMessage == LCDOn
+        MP_MainWindow::slotSystemMessage-----LCDOn----
+enter MP_PlayerImpl::setLCDState
+Entering MP_MainScreen::setLCDState()===isLCDOn=1=
+ZApplication::slotSystemMessage msg=LCDOff data=(null)
+<<<<<<<<<<<<<<<< e5568c>>>>>>>>>>>> slotSystemMessage == LCDOff
+        MP_MainWindow::slotSystemMessage-----LCDOff---
+enter MP_PlayerImpl::setLCDState
+Entering MP_MainScreen::setLCDState()===isLCDOn=0=
