@@ -1,4 +1,5 @@
 #!/bin/sh
+# Thanks to VINRARUS for one liner scripts.
 
 rm -Rf uncrypted.tgz
 

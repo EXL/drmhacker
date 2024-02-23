@@ -37,6 +37,6 @@ arm-linux-strip -s drmhacker_e680
 
 ```
 cd /mmc/mmca1/utils/
-// TODO: Fill this with real data from E680 or EZX
-./drmhacker_ezx Picture.drm.jpg Picture.jpg
+./drmhacker_e680 /diska/preload/java/Application.drm.jar Application.jar
+./drmhacker_ezx /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
 ```

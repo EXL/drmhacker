@@ -1,0 +1,161 @@
+В рамках проекта по сохранению различного наследия и контента, который был использован в телефонах Motorola, мне потребовалось создать утилиту, которая расшифровывает файлы, защищённые с помощью технологии OMA DRM. Наверняка все обладатели EZX и MotoMAGX телефонов сталкивались с подобными защитами из-за которых уникальные стандартные рингтоны, анимации, изображения, видеоролики и Java-приложения было невозможно передать на другие устройства.
+
+Собственно, саму утилиту [b]drmhacker[/b] и её исходный код можно найти на GitHub'е:
+[url=https://github.com/EXL/drmhacker][b]https://github.com/EXL/drmhacker[/b][/url]
+
+Идея, используемая в утилите не нова и уже когда-то применялась [url=https://forum.motofan.ru/index.php?showuser=160063][b]Borman92[/b][/url]'ом в теме [url=https://forum.motofan.ru/index.php?showtopic=143336][b]EZX DRM hacker, Снятие защиты от копирования с Java-приложений[/b][/url], вот только на MotoMAGX устройствах DRM API, которые использовал Borman92 недоступны, поэтому мне пришлось взять в руки IDA Pro вместе с Ghidra и немного заняться реверс-инжинирингом SO-библиотек MotoMAGX. В итоге новые DRM API были найдены, а их работа проверена, что в итоге привело к успешной расшифровке требуемых файлов.
+
+Ниже будут описаны два метода обхода DRM, первый предполагает отсутствие физического устройства, а второй будет работать на самом устройстве.
+
+[size=4][b]1. Использование эмуляции QEMU для обхода DRM[/b][/size]
+
+Метод взлома DRM-защиты без наличия физического устройства предполагает частичную эмуляцию прошивки и окружения телефона с помощью многофункционального эмулятора QEMU. Файлы защищенные DRM привязаны к определённой прошивке телефона, но с помощью QEMU можно заэмулировать её часть и получить раскриптованные файлы.
+
+Требования: Ubuntu 22.04 LTS и выше, либо Windows 10 + WSL/WSL2, Linux command-line skills, SSH skills.
+Зависимости: QEMU, OpenSSH.
+Логины и пароли: [b]root:root[/b], [b]user:user[/b]
+Платформа: Поздние EZX и все MotoMAGX телефоны и смартфоны.
+
+1. Установите необходимые зависимости и загрузите архив [url=https://firmware.center/projects/EXL/Motorola/DRM/moto_drmhacker_kitchen.zip][b]moto_drmhacker_kitchen.zip[/b][/url] (зеркала приветствуются!), распакуйте его в любое удобное место.
+
+[code]sudo apt install qemu-system-arm openssh-client
+cd ~/Downloads/
+unzip moto_drmhacker_kitchen.zip
+cd ~/Downloads/moto_drmhacker_kitchen/[/code]
+2. Распакуйте SBF-файл прошивки контент из которой вы хотите раскриптовать с помощью программы [url=https://forum.motofan.ru/index.php?act=Attach&type=post&id=279865]SBF-Recalc 1.2.9.1[/url] или [url=https://motofan.ru/downloads/5002797/]RSD Lite 3.8[/url] (см. метод описанный здесь: [url=https://forum.motofan.ru/index.php?s=&showtopic=1741944&view=findpost&p=1796338]7. Трюк для корректной распаковки SBF и SHX прошивок[/url]).
+
+3. Из распакованных файлов прошивки требуются следующие кодовые группы: [list]
+[*]CG43.smg ([b]setup.img[/b], содержит первую часть ключей DRM).
+[*]CG44.smg ([b]securesetup.img[/b], содержит вторую часть ключей DRM).
+[*]CG52.smg ([b]resource.img[/b], содержит все закриптованные ресурсы).
+[/list]Все эти кодовые группы являются SquashFS-образами файловых систем, их необходимо переименовать в [b]CG43.smg[/b], [b]CG44.smg[/b], [b]CG52.smg[/b] и поместить их внутрь эмулируемого окружения.
+
+4. Запускаем эмуляцию на исполнение, ждём примерно две-три минуты до приглашения системы "Debian GNU/Linux 7 debian-armhf tty1".
+
+[code]qemu-system-arm -M vexpress-a9 -kernel vmlinuz-3.2.0-4-vexpress -initrd initrd.img-3.2.0-4-vexpress -drive if=sd,file=debian_wheezy_armhf_standard.qcow2 -append "root=/dev/mmcblk0p2" -nic user,hostfwd=tcp::2222-:22[/code]
+5. Во второй вкладке терминала перемещаем необходимые кодовые группы с помощью SCP или SFTP, на ваш вкус. Пользователь и пароль [b]root[/b], согласитесь со всем тем, что предложит SSH вроде добавления хоста в файл "know_hosts".
+
+[b]SCP:[/b]
+[code]scp -P 2222 CG43.smg CG44.smg CG52.smg root@localhost:
+root@localhost's password: root[/code]
+[b]SFTP:[/b]
+[code]sftp -P 2222 root@localhost
+root@localhost's password: root
+
+Connected to localhost.
+sftp> put CG43.smg
+sftp> put CG44.smg
+sftp> put CG52.smg
+sftp> quit[/code]
+6. В третьей вкладке терминала логинимся по SSH из под Linux внутрь эмулируемой системы в QEMU с паролем и пользователем [b]root[/b] и проверяем что все нужные файлы на месте:
+
+[code]ssh -p 2222 root@localhost
+root@localhost's password: root
+
+ls
+CG43.smg  CG44.smg  CG52.smg  chroot.sh  magx-root  unsquash.sh  utils[/code]
+7. Запускаем групповую распаковку образов SquashFS, затем переходим в режим взлома DRM и раскриптовываем все зашифрованные файлы в прошивке специально подготовленными скриптами:
+
+[code]./unsquash.sh
+
+./chroot.sh
+
+undrm.sh
+
+uncrypt.sh[/code]
+Кроме пакетной обработки расшифрованных файлов можно раскриптовать лишь отдельные файлы, например, таким способом:
+
+[code]cd /usr/data_resource/picture/
+drmhacker_magx drm_sp Amber.dcf Amber.jpg
+drmhacker_magx drm_sp Golden.drm.jpg Golden.jpg[/code]
+8. После успешного завершения работы скрипта [b]uncrypt.sh[/b] в корне директории [b]magx-root[/b] должен появиться архив [b]uncrypted.tgz[/b], забираем его на хост:
+
+[b]SCP:[/b]
+[code]scp -P 2222 root@localhost:magx-root/uncrypted.tgz uncrypted.tgz
+root@localhost's password: root
+
+tar -xvzf uncrypted.tgz[/code]
+[b]SFTP:[/b]
+[code]sftp -P 2222 root@localhost
+root@localhost's password: root
+
+Connected to localhost.
+sftp> get magx-root/uncrypted.tgz
+sftp> quit
+
+tar -xvzf uncrypted.tgz[/code]
+Полученный архив можно распаковать как стандартными средствами Ubuntu, так и через терминал. В нём будут содержаться раскриптованные файлы.
+
+9. Завершаем работу QEMU в SSH-сессии:
+
+[code]exit
+poweroff
+exit[/code]
+Через некоторое время окно QEMU закроется.
+
+10. Примечание по прошивкам последнего поколения телефонов на EZX-платформе. В них всё аналогично за исключением того, что кодовые группы имеют другую нумерацию: [list]
+[*]CG34.smg ([b]resource.img[/b], содержит все закриптованные ресурсы).
+[*]CG42.smg ([b]setup.img[/b], содержит первую часть ключей DRM).
+[*]CG37.smg ([b]securesetup.img[/b], содержит вторую часть ключей DRM).
+[/list]Кодовые группы у EZX являются CramFS-образами файловых систем, поэтому их удобнее всего будет распаковать утилитой [url=https://forum.motofan.ru/index.php?act=Attach&type=post&id=279866][b]uncramfs[/b][/url] на хосте, затем запаковать в какой-нибудь архив, к примеру, TAR или TGZ и аналогично поместить их внутрь эмулируемого окружения, в скрипте [b]unsquash.sh[/b] обозначены директории в которые нужно поместить DRM-ключи и закриптованные файлы. Контент из более древних EZX-телефонов, таких как Motorola E680i, A780 и ещё более ранних пока можно раскриптовать лишь на самих устройствах.
+
+:ps: Некоторые кодовые группы в EZX-телефонах могут распаковываться с пустым смещением, которое забито пустотой (FF-байтами) в начале. Поэтому просто обрежьте эту пустоту с помощью HEX-редактора по типу HxD или утилиты [b]dd[/b].
+
+[size=4][b]2. Использование физического телефона на платформе EZX или MotoMAGX для обхода DRM[/b][/size]
+
+Здесь всё просто. Целевое устройство прошивается или модифицируется для возможности запуска стороннего нативного исполняемого кода (кастомная прошивка, специальные архивы с использованием уязвимостей и пр.), затем на устройство загружаются соответствующие утилиты [b]drmhacker_e680[/b], [b]drmhacker_ezx[/b] или [b]drmhacker_magx[/b] и через Telnet или просто через консоль на самом устройстве выполняется процедура расшифровки требуемых файлов:
+
+[code]./drmhacker_e680 /diska/preload/java/Application.drm.jar Application.jar
+
+./drmhacker_ezx /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
+
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Animation.dcf Animation.gif[/code]
+Благодаря помощи [url=https://forum.motofan.ru/index.php?showuser=211044][b]VINRARUS[/b][/url]'а были написаны специальные скрипты-однострочники, позволяющие немного автоматизировать процесс расшифровки DCF и DRM файлов в прошивке прямо на самом телефоне:
+
+[code]find /usr/data_resource/picture -type f -name "*.dcf*" | while read FILE; do F="${FILE%.*}"; drmhacker_magx drm_sp "$FILE" "${F##*/}"; done
+
+find /usr/data_resource/picture -type f -name "*.drm*" | while read FILE; do F1="${FILE%.drm*}"; F2="${FILE##*.drm}"; drmhacker_magx drm_sp "$FILE" "${F1##*/}$F2"; done[/code]
+[size=4][b]3. Список раскриптованного контента / List of decrypted content:[/b][/size]
+
+01. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797339]Motorola AURA R1 (MotoMAGX)[/url]
+02. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797340]Motorola AURA R1 Celestial Edition (MotoMAGX)[/url]
+03. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797341]Motorola AURA R1 Diamond Edition (MotoMAGX)[/url]
+04. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797342]Motorola ROKR E8 (MotoMAGX)[/url]
+05. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797343]Motorola ROKR EM30 (MotoMAGX)[/url]
+06. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797344]Motorola VE66 (MotoMAGX)[/url]
+07. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797345]Motorola ROKR EM35 (MotoMAGX)[/url]
+08. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797346]Motorola ZINE ZN5 T-Mobile (MotoMAGX)[/url]
+09. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797347]Motorola Z6w (MotoMAGX)[/url]
+10. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797348]Motorola JEWEL U9 (MotoMAGX)[/url]
+11. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797349]Motorola PEBL U9 (MotoMAGX)[/url]
+12. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797351]Motorola Tundra VA76r (MotoMAGX)[/url]
+13. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797352]Motorola RAZR² V8 (MotoMAGX)[/url]
+14. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797353]Motorola RAZR² V8 Luxury Edition (MotoMAGX)[/url]
+15. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797354]Motorola ROKR Z6 (MotoMAGX)[/url]
+16. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797355]Motorola RIZR Z6 (MotoMAGX)[/url]
+17. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797356]Motorola A910 (EZX)[/url]
+18. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797357]Motorola A910i (EZX)[/url]
+19. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797358]Motorola ROKR E2 (EZX)[/url]
+20. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797359]Motorola E680 (EZX)[/url]
+21. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797360]Motorola E680i (EZX)[/url]
+22. [url=https://forum.motofan.ru/index.php?s=&showtopic=1742432&view=findpost&p=1797365]Motorola PEBL U9 Gold Edition (MotoMAGX)[/url]
+
+[size=4][b]4. Дополнительная информация и зеркала:[/b][/size]
+
+Директория с архивами, где можно скачать архивы с раскриптованными файлами и кухню:
+[url=https://firmware.center/projects/EXL/Motorola/DRM][b]https://firmware.center/projects/EXL/Motorola/DRM[/b][/url]
+
+Релиз утилиты на GitHub:
+[url=https://github.com/EXL/drmhacker/releases/download/v1.0/drmhacker_linux_x86_64.zip][b]https://github.com/EXL/drmhacker/releases/download/v1.0/drmhacker_linux_x86_64.zip[/b][/url]
+
+Авторство образов Debian от [b]aurel32[/b]:
+[url=https://people.debian.org/~aurel32/qemu/armhf/]https://people.debian.org/~aurel32/qemu/armhf/[/url]
+[url=https://people.debian.org/~aurel32/qemu/armel/]https://people.debian.org/~aurel32/qemu/armel/[/url]
+
+Спасибо пользователям:
+[url=https://forum.motofan.ru/index.php?showuser=194233][b]PUNK-398[/b][/url] -- За мотивацию, тестирование и идею.
+[url=https://forum.motofan.ru/index.php?showuser=254075][b]mhous33[/b][/url] -- За редактирование English-перевода.
+[url=https://forum.motofan.ru/index.php?showuser=211044][b]VINRARUS[/b][/url] -- За однострочники.
+
+Прикреплённые файлы:

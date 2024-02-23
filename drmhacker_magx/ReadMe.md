@@ -40,5 +40,5 @@ Examples:
 ```bash
 cd /mmc/mmca1/utils/
 ./drmhacker_magx drm_sp /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
-./drmhacker_magx drm_sp /usr/data_resource/pictures/Picture.gif.dcf Picture.gif
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Animation.dcf Animation.gif
 ```
