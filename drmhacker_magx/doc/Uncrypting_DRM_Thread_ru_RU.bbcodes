@@ -33,7 +33,7 @@ cd ~/Downloads/moto_drmhacker_kitchen/[/code]
 4. Запускаем эмуляцию на исполнение, ждём примерно две-три минуты до приглашения системы "Debian GNU/Linux 7 debian-armhf tty1".
 
 [code]qemu-system-arm -M vexpress-a9 -kernel vmlinuz-3.2.0-4-vexpress -initrd initrd.img-3.2.0-4-vexpress -drive if=sd,file=debian_wheezy_armhf_standard.qcow2 -append "root=/dev/mmcblk0p2" -nic user,hostfwd=tcp::2222-:22[/code]
-5. Во второй вкладке терминала перемещаем необходимые кодовые группы с помощью SCP или SFTP, на ваш вкус. Пользователь и пароль [b]root[/b], согласитесь со всем тем, что предложит SSH вроде добавления хоста в файл "know_hosts".
+5. Во второй вкладке терминала перемещаем необходимые кодовые группы внутрь эмулятора с помощью SCP или SFTP, на ваш вкус. Пользователь и пароль [b]root[/b], согласитесь со всем тем, что предложит SSH вроде добавления хоста в файл "know_hosts".
 
 [b]SCP:[/b]
 [code]scp -P 2222 CG43.smg CG44.smg CG52.smg root@localhost:
@@ -63,7 +63,7 @@ CG43.smg  CG44.smg  CG52.smg  chroot.sh  magx-root  unsquash.sh  utils[/code]
 undrm.sh
 
 uncrypt.sh[/code]
-Кроме пакетной обработки расшифрованных файлов можно раскриптовать лишь отдельные файлы, например, таким способом:
+Если нужно, то можно раскриптовать лишь отдельные файлы из прошивки, например, таким способом:
 
 [code]cd /usr/data_resource/picture/
 drmhacker_magx drm_sp Amber.dcf Amber.jpg
@@ -143,7 +143,7 @@ find /usr/data_resource/picture -type f -name "*.drm*" | while read FILE; do F1=
 
 [size=4][b]4. Дополнительная информация и зеркала:[/b][/size]
 
-Директория с архивами, где можно скачать архивы с раскриптованными файлами и кухню:
+Директория где можно скачать архивы с раскриптованными файлами и кухню:
 [url=https://firmware.center/projects/EXL/Motorola/DRM][b]https://firmware.center/projects/EXL/Motorola/DRM[/b][/url]
 
 Релиз утилиты на GitHub:
@@ -158,4 +158,4 @@ find /usr/data_resource/picture -type f -name "*.drm*" | while read FILE; do F1=
 [url=https://forum.motofan.ru/index.php?showuser=254075][b]mhous33[/b][/url] -- За редактирование English-перевода.
 [url=https://forum.motofan.ru/index.php?showuser=211044][b]VINRARUS[/b][/url] -- За однострочники.
 
-Прикреплённые файлы:
+Прикреплённые файлы / Attached files:

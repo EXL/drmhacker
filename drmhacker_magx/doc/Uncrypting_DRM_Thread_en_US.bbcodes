@@ -1,0 +1,137 @@
+I needed to develop a utility that decrypts files protected by OMA DRM technology as part of a project to preserve a wide range of multimedia content once used in Motorola phones. Many users of EZX and MotoMAGX phones have encountered difficulties in transferring or saving unique standard ringtones, animations, images, videos, and Java applications to other devices because of DRM restrictions.
+
+The [b]drmhacker[/b] utility and its source code are available on GitHub:
+[url=https://github.com/EXL/drmhacker][b]https://github.com/EXL/drmhacker[/b][/url]
+
+The concept behind this utility isn't new—it was first used by [url=https://forum.motofan.ru/index.php?showuser=160063][b]Borman92[/b][/url] to remove copy protection from Java apps on EZX devices in [url=https://forum.motofan.ru/index.php?showtopic=143336][b]EZX DRM hacker, Removing copy protection from Java applications[/b][/url] topic. But the methods Borman92 used don't work on MotoMAGX phones, so I had to use some tools like IDA Pro and Ghidra, to dig into the MotoMAGX system SO-libraries and figure things out. In the end, I found and tested some new APIs to bypass the DRM and managed to decrypt the files.
+
+In the following sections of the article, I will outline two methods for bypassing DRM protection. The first method can be implemented without the need for a physical device, while the second method is designed to operate directly on the phone itself.
+
+[size=4][b]1. Bypassing DRM Through QEMU Emulation[/b][/size]
+
+The method of hacking DRM protection without a physical device involves partial emulation of the phone's firmware and environment using the multifunctional QEMU emulator. DRM-protected files are tied to a specific phone firmware, but using QEMU you can emulate part of it and get decrypted files.
+
+To use method tool, you need:
+
+- Operating System: Ubuntu version 22.04 or newer. If you're using Windows, you should have Windows 10 with Windows Subsystem for Linux (WSL or WSL2) installed.
+- Skills: You should know how to use the Linux command line and be familiar with SSH (Secure Shell) for remote connections.
+- Software: QEMU, OpenSSH.
+- Accounts: [b]root:root[/b], [b]user:user[/b]
+- Firmware: later versions Motorola EZX, all Motorola MotoMAGX.
+
+1. Install the necessary dependencies then download the [url=https://firmware.center/projects/EXL/Motorola/DRM/moto_drmhacker_kitchen.zip][b]moto_drmhacker_kitchen.zip[/b][/url] archive (mirrors are welcome!), unpack it.
+
+[code]sudo apt install qemu-system-arm openssh-client
+cd ~/Downloads/
+unzip moto_drmhacker_kitchen.zip
+cd ~/Downloads/moto_drmhacker_kitchen/[/code]
+2. Unpack the SBF firmware file containing the encrypted content you wish to decrypt. Use either [url=https://forum.motofan.ru/index.php?act=Attach&type=post&id=279865]SBF-Recalc 1.2.9.1[/url] or [url=https://motofan.ru/downloads/5002797/]RSD Lite 3.8[/url] for this purpose. Refer to the method outlined in our guide "[url=https://forum.motofan.ru/index.php?s=&showtopic=1741944&view=findpost&p=1796338]7. A Trick for Correctly Unpacking SBF and SHX Firmware[/url]" to ensure proper extraction using RSD Lite.
+
+3. The following code groups are required from the unpacked firmware files: [list]
+[*]CG43.smg ([b]setup.img[/b], contains the first part of the DRM keys).
+[*]CG44.smg ([b]securesetup.img[/b], contains the second part of the DRM keys).
+[*]CG52.smg ([b]resource.img[/b], contains all encrypted resources).
+[/list]All these code groups are SquashFS images of file systems, they must be renamed to [b]CG43.smg[/b], [b]CG44.smg[/b], [b]CG52.smg[/b] and placed inside the emulated environment.
+
+4. Initiate the emulation to begin. Please wait approximately two to three minutes for the system to start up. You will know the process is complete when the prompt "Debian GNU/Linux 7 debian-armhf tty1" appears on the screen.
+
+[code]qemu-system-arm -M vexpress-a9 -kernel vmlinuz-3.2.0-4-vexpress -initrd initrd.img-3.2.0-4-vexpress -drive if=sd,file=debian_wheezy_armhf_standard.qcow2 -append "root=/dev/mmcblk0p2" -nic user,hostfwd=tcp::2222-:22[/code]
+5. In the second terminal tab, transfer the required code groups to the emulator by using either SCP or SFTP, according to your preference. Use the username and password [b]root[/b], and accept any suggestions from SSH, such as adding the host to the "known_hosts" file.
+
+[b]SCP:[/b]
+[code]scp -P 2222 CG43.smg CG44.smg CG52.smg root@localhost:
+root@localhost's password: root[/code]
+[b]SFTP:[/b]
+[code]sftp -P 2222 root@localhost
+root@localhost's password: root
+
+Connected to localhost.
+sftp> put CG43.smg
+sftp> put CG44.smg
+sftp> put CG52.smg
+sftp> quit[/code]
+6. In the third tab of the terminal, access the emulated system on QEMU by logging in through SSH from Linux. The username is [b]root[/b] and the corresponding password. Once logged in, verify that all required files are present:
+
+[code]ssh -p 2222 root@localhost
+root@localhost's password: root
+
+ls
+CG43.smg  CG44.smg  CG52.smg  chroot.sh  magx-root  unsquash.sh  utils[/code]
+7. Using specially prepared scripts, run the unpacking of three SquashFS images, then switch to DRM cracking mode and decrypt all encrypted files in the firmware:
+
+[code]./unsquash.sh
+
+./chroot.sh
+
+undrm.sh
+
+uncrypt.sh[/code]
+If needed, individual files within the firmware can be decrypted using the following method:
+
+[code]cd /usr/data_resource/picture/
+drmhacker_magx drm_sp Amber.dcf Amber.jpg
+drmhacker_magx drm_sp Golden.drm.jpg Golden.jpg[/code]
+8. Once the [b]uncrypt.sh[/b] script has finished executing, you will find the resulting archive, named [b]uncrypted.tgz[/b], at the root of the [b]magx-root[/b] directory. Proceed to move this archive to your host system.
+
+[b]SCP:[/b]
+[code]scp -P 2222 root@localhost:magx-root/uncrypted.tgz uncrypted.tgz
+root@localhost's password: root
+
+tar -xvzf uncrypted.tgz[/code]
+[b]SFTP:[/b]
+[code]sftp -P 2222 root@localhost
+root@localhost's password: root
+
+Connected to localhost.
+sftp> get magx-root/uncrypted.tgz
+sftp> quit
+
+tar -xvzf uncrypted.tgz[/code]
+The resulting archive, containing encrypted content files, can be extracted using either a standard archiving utility on Ubuntu or through the command line in the terminal.
+
+9. Shut down QEMU in the SSH session:
+
+[code]exit
+poweroff
+exit[/code]
+The QEMU window will close after a while.
+
+10. Please note that in the firmware for the latest generation of phones on the EZX platform, everything is similar except for the fact that the code groups are numbered differently: [list]
+[*]CG34.smg ([b]resource.img[/b], contains all encrypted resources).
+[*]CG42.smg ([b]setup.img[/b], contains the first part of the DRM keys).
+[*]CG37.smg ([b]securesetup.img[/b], contains the second part of the DRM keys).
+[/list]The code groups in EZX firmware are CramFS image files of the file systems. For convenience, it's best to unpack them using the [url=https://forum.motofan.ru/index.php?act=Attach&type=post&id=279866][b]uncramfs[/b][/url] utility on the host machine. Subsequently, repackage them into an archive format, such as TAR or TGZ. You can then transfer these archives into the emulated environment, placing them in the directories specified by the [b]unsquash.sh[/b] script. These directories are where you should also place the DRM keys and encrypted files. As for content from older EZX phones like the Motorola E680i and A780, it can currently be decrypted only on the devices themselves.
+
+:ps: Certain code groups in EZX phones can be unpacked even with an initial empty offset that consists of blank space (FF bytes). To fix this, simply remove these bytes using a hex editor, such as HxD, or the [b]dd[/b] command-line utility.
+
+[size=4][b]2. Bypassing DRM by utilizing a physical phone on the EZX or MotoMAGX platform.[/b][/size]
+
+The process here is straightforward. First, the target device must be flashed or modified to enable the execution of third-party native executable code with using a custom firmware or a special archives that exploit vulnerabilities. Next, the appropriate utilities – [b]drmhacker_e680[/b], [b]drmhacker_ezx[/b], and [b]drmhacker_magx[/b] – should be placed on the device. Finally, the decryption of the necessary files is carried out either through Telnet or directly via the device's console:
+
+[code]./drmhacker_e680 /diska/preload/java/Application.drm.jar Application.jar
+
+./drmhacker_ezx /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
+
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Picture.drm.jpg Picture.jpg
+./drmhacker_magx drm_sp /usr/data_resource/pictures/Animation.dcf Animation.gif[/code]
+Thanks to the help of [url=https://forum.motofan.ru/index.php?showuser=211044][b]VINRARUS[/b][/url], special one-line scripts were written that allow us to slightly automate the process of decrypting DCF and DRM files in the firmware directly on the phone itself.
+
+[code]find /usr/data_resource/picture -type f -name "*.dcf*" | while read FILE; do F="${FILE%.*}"; drmhacker_magx drm_sp "$FILE" "${F##*/}"; done
+
+find /usr/data_resource/picture -type f -name "*.drm*" | while read FILE; do F1="${FILE%.drm*}"; F2="${FILE##*.drm}"; drmhacker_magx drm_sp "$FILE" "${F1##*/}$F2"; done[/code]
+[size=4][b]3. Additional information and mirrors:[/b][/size]
+
+Here is the directory where you can download archives containing the scripted files and utilities:
+[url=https://firmware.center/projects/EXL/Motorola/DRM][b]https://firmware.center/projects/EXL/Motorola/DRM[/b][/url]
+
+Release of the drmhacker on GitHub:
+[url=https://github.com/EXL/drmhacker/releases/download/v1.0/drmhacker_linux_x86_64.zip][b]https://github.com/EXL/drmhacker/releases/download/v1.0/drmhacker_linux_x86_64.zip[/b][/url]
+
+Debian image credits by [b]aurel32[/b]:
+[url=https://people.debian.org/~aurel32/qemu/armhf/]https://people.debian.org/~aurel32/qemu/armhf/[/url]
+[url=https://people.debian.org/~aurel32/qemu/armel/]https://people.debian.org/~aurel32/qemu/armel/[/url]
+
+Thanks:
+[url=https://forum.motofan.ru/index.php?showuser=194233][b]PUNK-398[/b][/url] -- For motivation, testing and idea.
+[url=https://forum.motofan.ru/index.php?showuser=254075][b]mhous33[/b][/url] -- For editing the English translation.
+[url=https://forum.motofan.ru/index.php?showuser=211044][b]VINRARUS[/b][/url] -- For one-liners scripts.
